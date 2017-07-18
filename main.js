@@ -32,6 +32,8 @@ function loadStocks(stocks) {
 
 function addStock(stock, ulElement) {
   const liElement = document.createElement('li');
+  liElement.classList.add('box');
+
   const h2Element = document.createElement('h2');
   h2Element.textContent = stock.Symbol + ' (' + stock.Name + ')';
 
