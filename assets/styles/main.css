@@ -11,10 +11,20 @@ html {
 
 a {
   text-decoration: none;
+  color: black;
 }
 
 ul {
   list-style: none;
+}
+
+@font-face {
+  font-family: "HelveticaNeueW01-55Roma";
+  src: url("../fonts/HelveticaNeueW01-55Roman.eot?#iefix");
+  src: url("../fonts/HelveticaNeueW01-55Roman.eot?#iefix") format("eot"),
+  url("../fonts/HelveticaNeueW01-55Roman.woff") format("woff"),
+  url("../fonts/HelveticaNeueW01-55Roman.ttf") format("truetype"),
+  url("../fonts/HelveticaNeueW01-55Roman.svg#helvetica_neue") format("svg");
 }
 
 .ignore {
@@ -41,8 +51,6 @@ body header {
   border-radius: 8px 8px 0 0;
   padding: 0 30px;
   margin-bottom: 2px;
-  font-family: Avenir, sans-serif;
-
 }
 
 .box {
@@ -75,10 +83,13 @@ body header ul {
   display: inline-flex;
   justify-content: space-between;
   width: 222px;
-  /*font-family: Glyphter, sans-serif;*/
+  font-family: Glyphter, sans-serif;
 }
 
 body header li {
+  font-size: 40px;
+  /*color: transparent;*/
+  font-weight: lighter;
 }
 
 body main {
@@ -88,8 +99,70 @@ body main {
 body main li {
   height: 117px;
   background-color: white;
+  font-family: Avenir, sans-serif;
+}
+
+body main li > h2 {
+  font-size: 33px;
+  font-weight: 300;
+  /*text-align: left;*/
+  color: #59737c;
+}
+
+body main li > div {
+  font-family: HelveticaNeueW01-55Roman, sans-serif;
+  font-size: 30px;
+  color: #59737c;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 250px;
 }
 
 body main li:last-of-type {
   border-radius: 0 0 8px 8px ;
+}
+
+.change-button {
+  font-family: Avenir, sans-serif;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+body header li:hover * {
+  color: red;
+}
+
+.box-arrow {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 40px;
+  height: 80px;
+}
+
+.down-button,
+.up-button {
+  border: none;
+  position: relative;
+  color: transparent;
+}
+
+.down-button:before,
+.up-button:before {
+  color: black;
+}
+
+.down-button {
+  transform: rotate(180deg);
+}
+
+.green-button {
+  background: #63da39;
+}
+
+.red-button {
+  background: #ff4f46;
 }

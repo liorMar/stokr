@@ -23,39 +23,78 @@ const stocks =
     }
   ];
 
-function loadStocks(stocks) {
-  const ulElement = document.querySelector('main > ul');
-  stocks.forEach(function (stock) {
-    addStock(stock, ulElement);
-  });
-}
+// {
+//   let t = function () {
+//     function loadStocks(stocks) {
+//     const ulElement = document.querySelector('main > ul');
+//       ulElement.innerHTML = stocks.reduce(
+//         function (html, stock, index) {
+//           return html + addStock(stock, ulElement, index);
+//     }, '');
+//   }
+//
+//   function round(number) {
+//     return Math.round(number * 100) / 100;
+//   }
+//
+//   function redOrGreen(num) {
+//     if (num >= 0) {
+//       return 'green-button';
+//     } else
+//       return 'red-button';
+//   }
+//
+//   function addStock(stock, index) {
+//       return '<li position="'+index+'" class="box">' +
+//       '   <h2>'+stock.Symbol+' ('+stock.Name+'</h2>' +
+//       '   <div>' +
+//       '     ' +round(stock.LastTradePriceOnly)+
+//       '     <button class="change-button '+redOrGreen(Number(stock.PercentChange.substr(0, stock.PercentChange.length-1)))+'">'+stock.PercentChange+'</button>' +
+//       '     <div class="box-arrow">' +
+//       '       <span class="icon-arrow up-button"></span>' +
+//       '       <span class="icon-arrow down-button"></span>' +
+//       '     </div>' +
+//       '   </div>' +
+//       '</li>';
+//   }
+//
+//   loadStocks(stocks);
+//   }();
+// }
 
-function addStock(stock, ulElement) {
-  const liElement = document.createElement('li');
-  liElement.classList.add('box');
+(function init() {
+  function loadStocks(stocks) {
+    const ulElement = document.querySelector('main > ul');
+    ulElement.innerHTML = stocks.reduce(
+      function (html, stock, index) {
+        return html + addStock(stock, ulElement, index);
+      }, '');
+  }
 
-  const h2Element = document.createElement('h2');
-  h2Element.textContent = stock.Symbol + ' (' + stock.Name + ')';
+  function round(number) {
+    return Math.round(number * 100) / 100;
+  }
 
-  const divElement = document.createElement('div');
-  divElement.appendChild(document.createTextNode(stock.LastTradePriceOnly));
+  function redOrGreen(num) {
+    if (num >= 0) {
+      return 'green-button';
+    } else
+      return 'red-button';
+  }
 
-  const buttonElement = document.createElement('button');
-  buttonElement.textContent = stock.PercentChange;
-  divElement.appendChild(buttonElement);
+  function addStock(stock, index) {
+    return '<li position="'+index+'" class="box">' +
+      '   <h2>'+stock.Symbol+' ('+stock.Name+'</h2>' +
+      '   <div>' +
+      '     ' +round(stock.LastTradePriceOnly)+
+      '     <button class="change-button '+redOrGreen(Number(stock.PercentChange.substr(0, stock.PercentChange.length-1)))+'">'+stock.PercentChange+'</button>' +
+      '     <div class="box-arrow">' +
+      '       <span class="icon-arrow up-button"></span>' +
+      '       <span class="icon-arrow down-button"></span>' +
+      '     </div>' +
+      '   </div>' +
+      '</li>';
+  }
 
-  const upButtonElement = document.createElement('button');
-  upButtonElement.textContent = 'UP';
-  divElement.appendChild(upButtonElement);
-
-  const downButtonElement = document.createElement('button');
-  downButtonElement.textContent = 'DOWN';
-  divElement.appendChild(downButtonElement);
-
-  liElement.appendChild(h2Element);
-  liElement.appendChild(divElement);
-  ulElement.appendChild(liElement);
-}
-
-//TODO export to init
-loadStocks(stocks);
+  loadStocks(stocks);
+}());
