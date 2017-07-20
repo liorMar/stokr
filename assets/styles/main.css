@@ -138,17 +138,18 @@ body header li button {
   border: none;
   color: white;
   border-radius: 8px;
-  /*padding: 8px;*/
   height: 56px;
   width: 150px;
 }
 
 .box-arrow {
   display: flex;
-  align-items: center;
   flex-direction: column;
-  width: 40px;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
   height: 60px;
+  font-size: 0;
 }
 
 li:first-of-type .up-button:before,
@@ -159,13 +160,13 @@ li:last-of-type .down-button:before {
 .down-button,
 .up-button {
   border: none;
-  position: relative;
   color: transparent;
 }
 
 .down-button:before,
 .up-button:before {
   color: #ababab;
+  font-size: 30px;
 }
 
 .down-button {

@@ -23,8 +23,8 @@ const stocks =
     }
   ];
 
-(function init() {
-  function loadStocks(stocks) {
+(function init(stocks) {
+  function loadStocks() {
     const ulElement = document.querySelector('main > ul');
     ulElement.innerHTML = stocks.reduce(
       function (html, stock, index) {
@@ -41,7 +41,7 @@ const stocks =
   }
 
   function addStock(stock, upDisabled, downDisabled) {
-    return `<li class="box">
+    return `<li class="box ${stock.Symbol}">
       <h2>${stock.Symbol} (${stock.Name}</h2>   
       <div>
         ${round(stock.LastTradePriceOnly)}     
@@ -56,34 +56,67 @@ const stocks =
     </li>`;
   }
 
-  loadStocks(stocks);
+  loadStocks();
 
-  setHandler('.up-button', stockHandle, -1);
-  setHandler('.down-button', stockHandle, 1);
+  setHandler('.stocks', stockHandle);
 
-  function stockHandle(ev, newPosition) {
+  function swapStocks(stockIndex, newPosition) {
+    let tempStock = stocks[stockIndex];
+    stocks[stockIndex] = stocks[stockIndex + newPosition];
+    stocks[stockIndex + newPosition] = tempStock;
+  }
+
+  function swapInnerHTML(firstSwapStock, secondSwapStock) {
+    let tempHTML = firstSwapStock.innerHTML;
+    firstSwapStock.innerHTML = secondSwapStock.innerHTML;
+    secondSwapStock.innerHTML = tempHTML;
+  }
+
+  function swapLiButtonsDisabledValue(firstSwapStockLiElement, secondSwapStockLiElement) {
+    let firstSwapStockDivArrowElement = firstSwapStockLiElement.querySelector('.box-arrow');
+    let secondSwapStockDivArrowElement = secondSwapStockLiElement.querySelector('.box-arrow');
+
+    let tempDisabled = firstSwapStockDivArrowElement.firstElementChild.disabled;
+    firstSwapStockDivArrowElement.firstElementChild.disabled = secondSwapStockDivArrowElement.firstElementChild.disabled;
+    secondSwapStockDivArrowElement.firstElementChild.disabled = tempDisabled;
+
+    tempDisabled = firstSwapStockDivArrowElement.lastElementChild.disabled;
+    firstSwapStockDivArrowElement.lastElementChild.disabled = secondSwapStockDivArrowElement.lastElementChild.disabled;
+    secondSwapStockDivArrowElement.lastElementChild.disabled = tempDisabled;
+  }
+
+  function swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition) {
+    firstSwapStockLiElement.classList.remove(stocks[stockIndex].Symbol);
+    secondSwapStockLiElement.classList.remove(stocks[stockIndex + newPosition].Symbol);
+    firstSwapStockLiElement.classList.add(stocks[stockIndex + newPosition].Symbol);
+    secondSwapStockLiElement.classList.add(stocks[stockIndex].Symbol);
+  }
+
+  function stockHandle(ev) {
+    if (!ev.target.classList.contains('icon-arrow'))
+      return;
+
+    let newPosition = (ev.target.classList.contains('up-button')) ? -1 : 1;
+
     let symbol = ev.target.parentElement.getAttribute('data-symbol');
 
     let stockIndex = 0;
     stocks.find((stock, index) => {stockIndex = index; return stock.Symbol === symbol});
 
-    let tempStock = stocks[stockIndex];
-    stocks[stockIndex] = stocks[stockIndex+newPosition];
-    stocks[stockIndex+newPosition] = tempStock;
+    let firstSwapStockLiElement = document.querySelector('.'+stocks[stockIndex].Symbol);
+    let secondSwapStockLiElement = document.querySelector('.'+stocks[stockIndex + newPosition].Symbol);
 
-    //TODO instead of loadStocks do switch inner html!!!
-    loadStocks(stocks);
+    swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition);
 
-    setHandler('.up-button', stockHandle, -1);
-    setHandler('.down-button', stockHandle, 1);
+    swapLiButtonsDisabledValue(firstSwapStockLiElement, secondSwapStockLiElement);
+
+    swapInnerHTML(firstSwapStockLiElement, secondSwapStockLiElement);
+    swapStocks(stockIndex, newPosition);
   }
 
-  function setHandler(selector, handler, handlerArgs) {
-    document.querySelectorAll(selector)
-      .forEach(function (li) {
-        li.addEventListener('click', function (ev) {
-          handler(ev, handlerArgs);
-        });
-      })
+  function setHandler(selector, handler) {
+    document.querySelector(selector)
+      .addEventListener('click', handler);
   }
-}());
+}(stocks));
+
