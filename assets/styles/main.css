@@ -116,11 +116,21 @@ body main li > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 250px;
+  width: 290px;
 }
 
 body main li:last-of-type {
   border-radius: 0 0 8px 8px ;
+}
+
+body header li:hover * {
+  color: red;
+}
+
+.box-arrow button,
+body header li button {
+  border: none;
+  background: none;
 }
 
 .change-button {
@@ -128,11 +138,9 @@ body main li:last-of-type {
   border: none;
   color: white;
   border-radius: 8px;
-  padding: 8px;
-}
-
-body header li:hover * {
-  color: red;
+  /*padding: 8px;*/
+  height: 56px;
+  width: 150px;
 }
 
 .box-arrow {
@@ -141,6 +149,11 @@ body header li:hover * {
   flex-direction: column;
   width: 40px;
   height: 80px;
+}
+
+li:first-of-type .up-button:before,
+li:last-of-type .down-button:before {
+  color: rgba(171, 171, 171, 0.2);
 }
 
 .down-button,
