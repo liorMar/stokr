@@ -58,45 +58,32 @@ const stocks =
 
   loadStocks(stocks);
 
-  setHandler('.up-button', stockHandleUp);
-  setHandler('.down-button', stockHandleDown);
+  setHandler('.up-button', stockHandle, -1);
+  setHandler('.down-button', stockHandle, 1);
 
-  function stockHandleDown(ev) {
+  function stockHandle(ev, newPosition) {
     let symbol = ev.target.parentElement.getAttribute('data-symbol');
 
     let stockIndex = 0;
     stocks.find((stock, index) => {stockIndex = index; return stock.Symbol === symbol});
 
     let tempStock = stocks[stockIndex];
-    stocks[stockIndex] = stocks[stockIndex+1];
-    stocks[stockIndex+1] = tempStock;
+    stocks[stockIndex] = stocks[stockIndex+newPosition];
+    stocks[stockIndex+newPosition] = tempStock;
 
+    //TODO instead of loadStocks do switch inner html!!!
     loadStocks(stocks);
 
-    setHandler('.up-button', stockHandleUp);
-    setHandler('.down-button', stockHandleDown);
+    setHandler('.up-button', stockHandle, -1);
+    setHandler('.down-button', stockHandle, 1);
   }
 
-  function stockHandleUp(ev) {
-    let symbol = ev.target.parentElement.getAttribute('data-symbol');
-
-    let stockIndex = 0;
-    stocks.find((stock, index) => {stockIndex = index; return stock.Symbol === symbol});
-
-    let tempStock = stocks[stockIndex];
-    stocks[stockIndex] = stocks[stockIndex-1];
-    stocks[stockIndex-1] = tempStock;
-
-    loadStocks(stocks);
-
-    setHandler('.up-button', stockHandleUp);
-    setHandler('.down-button', stockHandleDown);
-  }
-
-  function setHandler(selector, handler) {
+  function setHandler(selector, handler, handlerArgs) {
     document.querySelectorAll(selector)
       .forEach(function (li) {
-        li.addEventListener('click', handler);
+        li.addEventListener('click', function (ev) {
+          handler(ev, handlerArgs);
+        });
       })
   }
 }());

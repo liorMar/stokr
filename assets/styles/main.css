@@ -148,12 +148,12 @@ body header li button {
   align-items: center;
   flex-direction: column;
   width: 40px;
-  height: 80px;
+  height: 60px;
 }
 
 li:first-of-type .up-button:before,
 li:last-of-type .down-button:before {
-  color: rgba(171, 171, 171, 0.2);
+  color: #eeeeee;
 }
 
 .down-button,
@@ -165,7 +165,7 @@ li:last-of-type .down-button:before {
 
 .down-button:before,
 .up-button:before {
-  color: black;
+  color: #ababab;
 }
 
 .down-button {
