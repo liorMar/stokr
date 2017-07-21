@@ -171,6 +171,16 @@ function upDownHandler(buttonElement) {
   swapStocks(stockIndex, newPosition);
 }
 
+function hideShowReorderControls(liElement) {
+  let divElement = liElement.querySelector('.box-arrow');
+
+  if (divElement.classList.contains('box-arrow-hidden')) {
+    divElement.classList.remove('box-arrow-hidden');
+  } else {
+    divElement.classList.add('box-arrow-hidden');
+  }
+}
+
 function hideFilterPanel(filterButton, mainElement) {
   filterButton.classList.remove('on');
   mainElement.removeChild(mainElement.children[0]);
@@ -221,6 +231,8 @@ function filterButtonHandler(filterButton) {
   } else {
     showFilterPanel(filterButton, mainElement);
   }
+
+  mainElement.querySelectorAll('li').forEach(hideShowReorderControls);
 }
 
 function changeButtonHandler(){

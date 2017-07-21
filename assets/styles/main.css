@@ -176,6 +176,11 @@ body header li button {
   width: 50px;
   height: 60px;
   font-size: 0;
+  visibility: visible;
+}
+
+.box-arrow-hidden {
+  visibility: collapse;
 }
 
 li:first-of-type .up-button:before,
