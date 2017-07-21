@@ -249,10 +249,38 @@ function filterByName(name) {
   })
 }
 
+function hideGain() {
+  let classProperty = this.valueOf();
+  document.querySelectorAll('.stocks li').forEach(function (stockLiElement) {
+    if (stockLiElement.querySelector('.change-button').classList.contains(classProperty)) {
+      stockLiElement.classList.add('hide-stocks');
+    }
+  })
+}
+
+function filterByGain(gain) {
+  switch (gain) {
+    case 'all':
+
+      break;
+
+    case 'losing':
+      hideGain.call('green-button');
+      break;
+
+    case 'gaining':
+      (hideGain.bind('red-button'))();
+      break;
+
+    default:
+
+  }
+}
+
 function applyButtonHandler() {
   document.querySelectorAll('.stocks li').forEach(resetFilter);
   filterByName(document.getElementById('name').value);
-  // filterByGain(document.getElementById('gain'));
+  filterByGain(document.getElementById('gain').value);
   // filterByRange(document.getElementById('range-from'));
 }
 
