@@ -53,6 +53,14 @@ function stockFindFunction(stock) {
   return stock.Symbol === this[0];
 }
 
+function round(number) {
+  return (Math.round(number * 100) / 100).toFixed(2);
+}
+
+function redOrGreen(num) {
+  return num >= 0 ? 'green-button' : 'red-button';
+}
+
 (function init(stocks, stocksToShow) {
   function loadHeader() {
     document.querySelector('body header').innerHTML = `
@@ -101,14 +109,6 @@ function stockFindFunction(stock) {
         </div>
       </div>
     </li>`;
-  }
-
-  function round(number) {
-    return (Math.round(number * 100) / 100).toFixed(2);
-  }
-
-  function redOrGreen(num) {
-    return num >= 0 ? 'green-button' : 'red-button';
   }
 
   loadHeader();
@@ -172,13 +172,17 @@ function upDownHandler(buttonElement) {
   swapStocks(stockIndex, newPosition);
 }
 
+function trimChange(number) {
+
+}
+
 function changeHandler(){
   changePreferences.preferredNumber = (changePreferences.preferredNumber+1) % changePreferences.length;
-  console.log(changePreferences.preferredNumber);
   let newPreference = changePreferences[changePreferences.preferredNumber];
 
   let buttonElements = document.querySelectorAll('.change-button');
-  buttonElements.forEach((buttonElement, index) => buttonElement.innerText = stocks[index][newPreference]);
+  buttonElements.forEach((buttonElement, index) =>
+    buttonElement.innerText = newPreference === 'Change' ? round(stocks[index][newPreference]) : stocks[index][newPreference]);
 }
 
 function stockHandle(ev) {
