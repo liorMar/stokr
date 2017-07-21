@@ -241,15 +241,16 @@ function filterButtonHandler(filterButton) {
 }
 
 function filterByName(name) {
+  name = name.toLowerCase();
   document.querySelectorAll('.stocks li').forEach(function (stockLiElement) {
-    if (stockLiElement.firstElementChild.textContent.search(new RegExp(name, 'i')) === -1) {
-      // stockLiElement.classList.remove('hide-stocks');
+    if (!stockLiElement.firstElementChild.textContent.toLowerCase().includes(name)) {
       stockLiElement.classList.add('hide-stocks');
     }
   })
 }
 
 function applyButtonHandler() {
+  document.querySelectorAll('.stocks li').forEach(resetFilter);
   filterByName(document.getElementById('name').value);
   // filterByGain(document.getElementById('gain'));
   // filterByRange(document.getElementById('range-from'));
@@ -272,7 +273,7 @@ function stockHandle(ev) {
   } else if (ev.target.classList.contains('filter-button')) {
     filterButtonHandler(ev.target);
   } else if (ev.target.classList.contains('apply-button')) {
-    applyButtonHandler(ev.target);
+    applyButtonHandler();
   }
 }
 
