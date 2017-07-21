@@ -183,9 +183,13 @@ body header li button {
   visibility: collapse;
 }
 
-li:first-of-type .up-button:before,
-li:last-of-type .down-button:before {
+.stocks li:first-of-type .up-button:before,
+.stocks li:last-of-type .down-button:before {
   color: #eeeeee;
+}
+
+.hide-stocks {
+  display: none;
 }
 
 .down-button,

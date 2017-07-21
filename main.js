@@ -97,7 +97,7 @@ function redOrGreen(num) {
 
   function addStock(stock, upDisabled, downDisabled) {
     return `<li class="box ${stock.Symbol}">
-      <h2>${stock.Symbol} (${stock.Name}</h2>   
+      <h2>${stock.Symbol} (${stock.Name})</h2>   
       <div>
         ${round(stock.LastTradePriceOnly)}     
         <button class="change-button ${redOrGreen(Number(stock.PercentChange.substr(0, stock.PercentChange.length - 1)))}">
@@ -181,9 +181,14 @@ function hideShowReorderControls(liElement) {
   }
 }
 
+function resetFilter(stockElement) {
+  stockElement.classList.remove('hide-stocks');
+}
+
 function hideFilterPanel(filterButton, mainElement) {
   filterButton.classList.remove('on');
   mainElement.removeChild(mainElement.children[0]);
+  mainElement.querySelectorAll('li').forEach(resetFilter);
 }
 
 function showFilterPanel(filterButton, mainElement) {
@@ -199,7 +204,7 @@ function showFilterPanel(filterButton, mainElement) {
         </div>
         <div>
           <label for="gain" class="capitalize">by gain</label>
-          <select>
+          <select id="gain">
             <option value="" class="capitalize"></option>
             <option value="all" class="capitalize">all</option>
             <option value="losing" class="capitalize">losing</option>
@@ -215,7 +220,7 @@ function showFilterPanel(filterButton, mainElement) {
           <input type="number" id="range-to">
         </div>
     </div>
-    <button class="apply-button capitalize">apply</button>
+    <button class="apply-button">Apply</button>
   `;
 
   mainElement.insertBefore(headerElement, mainElement.childNodes[0]);
@@ -235,6 +240,21 @@ function filterButtonHandler(filterButton) {
   mainElement.querySelectorAll('li').forEach(hideShowReorderControls);
 }
 
+function filterByName(name) {
+  document.querySelectorAll('.stocks li').forEach(function (stockLiElement) {
+    if (stockLiElement.firstElementChild.textContent.search(new RegExp(name, 'i')) === -1) {
+      // stockLiElement.classList.remove('hide-stocks');
+      stockLiElement.classList.add('hide-stocks');
+    }
+  })
+}
+
+function applyButtonHandler() {
+  filterByName(document.getElementById('name').value);
+  // filterByGain(document.getElementById('gain'));
+  // filterByRange(document.getElementById('range-from'));
+}
+
 function changeButtonHandler(){
   changePreferences.preferredNumber = (changePreferences.preferredNumber+1) % changePreferences.length;
   let newPreference = changePreferences[changePreferences.preferredNumber];
@@ -247,12 +267,12 @@ function changeButtonHandler(){
 function stockHandle(ev) {
   if (ev.target.classList.contains('icon-arrow')) {
     upDownHandler(ev.target);
-  }
-  else if (ev.target.classList.contains('change-button')) {
+  } else if (ev.target.classList.contains('change-button')) {
     changeButtonHandler();
-  }
-  else if (ev.target.classList.contains('filter-button')) {
+  } else if (ev.target.classList.contains('filter-button')) {
     filterButtonHandler(ev.target);
+  } else if (ev.target.classList.contains('apply-button')) {
+    applyButtonHandler(ev.target);
   }
 }
 
