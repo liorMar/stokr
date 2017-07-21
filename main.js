@@ -54,6 +54,28 @@ function stockFindFunction(stock) {
 }
 
 (function init(stocks, stocksToShow) {
+  function loadHeader() {
+    document.querySelector('body header').innerHTML = `
+    <h1 class="logo">stokr</h1>
+      <nav>
+        <ul>
+          <li>
+            <a href="#" class="search-button icon-search"></a>
+          </li>
+          <li>
+            <button class="refresh-button icon-refresh"></button>
+          </li>
+          <li>
+            <button class="filter-button icon-filter"></button>
+          </li>
+          <li>
+            <button class="settings-button icon-settings"></button>
+          </li>
+        </ul>
+      </nav>
+    `;
+  }
+
   function loadStocks() {
     const ulElement = document.querySelector('main > ul');
     let stock;
@@ -89,6 +111,7 @@ function stockFindFunction(stock) {
     return num >= 0 ? 'green-button' : 'red-button';
   }
 
+  loadHeader();
   loadStocks();
 
   setHandler('.stocks', stockHandle);
