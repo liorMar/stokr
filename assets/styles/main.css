@@ -9,13 +9,22 @@ html {
   margin: 0;
 }
 
+body header button,
 a {
   text-decoration: none;
-  color: black;
+  color: #ababab;
 }
 
 ul {
   list-style: none;
+}
+
+.on {
+  color: #41bf15;
+}
+
+label.capitalize {
+  text-transform: capitalize;
 }
 
 @font-face {
@@ -37,7 +46,6 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  /*align-content: center;*/
   background-color: #f0f4f7;
 }
 
@@ -70,31 +78,50 @@ body header {
   color: #41bf15;
 }
 
-header li > a,
-header li > button {
-
-}
-
-header button {
-
-}
-
-body header ul {
+body > header ul {
   display: inline-flex;
   justify-content: space-between;
   width: 222px;
   font-family: Glyphter, sans-serif;
 }
 
-body header li {
+body > header li {
   font-size: 40px;
-  /*color: transparent;*/
   font-weight: lighter;
 }
 
 body main {
   background-color: inherit;
 }
+
+
+
+
+/*------------body main header-----------*/
+
+main > header {
+  height: 162px;
+  background-color: white;
+  margin-bottom: 2px;
+}
+
+.div-filter {
+  color: #59737c;
+}
+
+.apply-button {
+  height: 120px;
+  width: 120px;
+  background-color: #41bf15;
+  border: #247906 solid 1px;
+  border-radius: 60px;
+  color: white;
+  font-size: 30px;
+}
+
+
+/*------------body main ul-----------*/
+
 
 body main li {
   height: 117px;
@@ -105,7 +132,6 @@ body main li {
 body main li > h2 {
   font-size: 33px;
   font-weight: 300;
-  /*text-align: left;*/
   color: #59737c;
 }
 

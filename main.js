@@ -114,7 +114,7 @@ function redOrGreen(num) {
   loadHeader();
   loadStocks();
 
-  setHandler('.stocks', stockHandle);
+  setHandler('body', stockHandle);
 }(stocks, stocksToShow));
 
 function swapStocks(stockIndex, newPosition) {
@@ -171,11 +171,59 @@ function upDownHandler(buttonElement) {
   swapStocks(stockIndex, newPosition);
 }
 
-function filterButtonHandler(number) {
-
+function hideFilterPanel(filterButton, mainElement) {
+  filterButton.classList.remove('on');
+  mainElement.removeChild(mainElement.children[0]);
 }
 
-function changeHandler(){
+function showFilterPanel(filterButton, mainElement) {
+  let headerElement = document.createElement('header');
+
+  headerElement.classList.add('div-filter');
+
+  headerElement.innerHTML = `
+    <div>
+        <div>
+          <label for="name" class="capitalize">by name</label>
+          <input type="text" id="name">
+        </div>
+        <div>
+          <label for="gain" class="capitalize">by gain</label>
+          <select>
+            <option value="" class="capitalize"></option>
+            <option value="all" class="capitalize">all</option>
+            <option value="losing" class="capitalize">losing</option>
+            <option value="gaining" class="capitalize">gaining</option>
+          </select>
+        </div>
+        <div>
+          <label for="range-from" class="capitalize">by range: from</label>
+          <input type="number" id="range-from">
+        </div>
+        <div>
+          <label for="range-to" class="capitalize">by range: to</label>
+          <input type="number" id="range-to">
+        </div>
+    </div>
+    <button class="apply-button capitalize">apply</button>
+  `;
+
+  mainElement.insertBefore(headerElement, mainElement.childNodes[0]);
+
+  filterButton.classList.add('on');
+}
+
+function filterButtonHandler(filterButton) {
+  let mainElement = document.querySelector('body main');
+
+  if (filterButton.classList.contains('on')){
+    hideFilterPanel(filterButton, mainElement);
+  } else {
+    showFilterPanel(filterButton, mainElement);
+  }
+}
+
+function changeButtonHandler(){
   changePreferences.preferredNumber = (changePreferences.preferredNumber+1) % changePreferences.length;
   let newPreference = changePreferences[changePreferences.preferredNumber];
 
@@ -185,10 +233,15 @@ function changeHandler(){
 }
 
 function stockHandle(ev) {
-  if (ev.target.classList.contains('icon-arrow'))
+  if (ev.target.classList.contains('icon-arrow')) {
     upDownHandler(ev.target);
-  else if (ev.target.classList.contains('change-button'))
-    changeHandler();
+  }
+  else if (ev.target.classList.contains('change-button')) {
+    changeButtonHandler();
+  }
+  else if (ev.target.classList.contains('filter-button')) {
+    filterButtonHandler(ev.target);
+  }
 }
 
 function setHandler(selector, handler) {
