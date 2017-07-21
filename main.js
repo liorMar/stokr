@@ -23,7 +23,22 @@ const stocks =
       "PercentChange": "+1.11%",
       "thirdChange" : "N/A",
       "LastTradePriceOnly": "50.599998"
+    },
+    {
+      "Symbol": "YHOO2",
+      "Name": "Yahoo2! Inc.",
+      "Change": "0.279999",
+      "PercentChange": "+1.11%",
+      "thirdChange" : "N/A",
+      "LastTradePriceOnly": "50.599998"
     }
+  ];
+
+const stocksToShow =
+  [
+    "WIX",
+    "MSFT",
+    "YHOO"
   ];
 
 const changePreferences = {
@@ -34,12 +49,19 @@ const changePreferences = {
   length: 3
 };
 
-(function init(stocks) {
+function stockFindFunction(stock) {
+  return stock.Symbol === this[0];
+}
+
+(function init(stocks, stocksToShow) {
   function loadStocks() {
     const ulElement = document.querySelector('main > ul');
-    ulElement.innerHTML = stocks.reduce(
-      function (html, stock, index) {
-        return html + addStock(stock, (index === 0 && 'disabled' ) || '', (index === (stocks.length - 1) && 'disabled' ) || '');
+    let stock;
+    ulElement.innerHTML = stocksToShow.reduce(
+      function (html, stockSymbol, index) {
+        if (stock = stocks.find(stockFindFunction.bind([stockSymbol])))
+          return html + addStock(stock, (index === 0 && 'disabled' ) || '', (index === (stocks.length - 1) && 'disabled' ) || '');
+        return html;
       }, '');
   }
 
@@ -71,7 +93,7 @@ const changePreferences = {
 
   setHandler('.stocks', stockHandle);
   setHandler('.stocks', stockHandle);
-}(stocks));
+}(stocks, stocksToShow));
 
 function swapStocks(stockIndex, newPosition) {
   let tempStock = stocks[stockIndex];
