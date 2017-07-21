@@ -90,7 +90,7 @@ function redOrGreen(num) {
     ulElement.innerHTML = stocksToShow.reduce(
       function (html, stockSymbol, index) {
         if (stock = stocks.find(stockFindFunction.bind([stockSymbol])))
-          return html + addStock(stock, (index === 0 && 'disabled' ) || '', (index === (stocks.length - 1) && 'disabled' ) || '');
+          return html + addStock(stock, (index === 0 && 'disabled' ) || '', (index === (stocksToShow.length - 1) && 'disabled' ) || '');
         return html;
       }, '');
   }
@@ -114,7 +114,6 @@ function redOrGreen(num) {
   loadHeader();
   loadStocks();
 
-  setHandler('.stocks', stockHandle);
   setHandler('.stocks', stockHandle);
 }(stocks, stocksToShow));
 
@@ -172,7 +171,7 @@ function upDownHandler(buttonElement) {
   swapStocks(stockIndex, newPosition);
 }
 
-function trimChange(number) {
+function filterButtonHandler(number) {
 
 }
 
