@@ -5,7 +5,7 @@ const stocks =
       "Name": "Wix.com Ltd.",
       "Change": "0.750000",
       "PercentChange": "+1.51%",
-      "thirdChange" : "N/A",
+      "Capital market" : "3.4B",
       "LastTradePriceOnly": "76.099998"
     },
     {
@@ -13,7 +13,7 @@ const stocks =
       "Name": "Microsoft Corporation",
       "PercentChange": "-2.09%",
       "Change": "-0.850006",
-      "thirdChange" : "N/A",
+      "Capital market" : "7.2B",
       "LastTradePriceOnly": "69.620003"
     },
     {
@@ -21,16 +21,32 @@ const stocks =
       "Name": "Yahoo! Inc.",
       "Change": "0.279999",
       "PercentChange": "+1.11%",
-      "thirdChange" : "N/A",
+      "Capital market" : "4.7B",
       "LastTradePriceOnly": "50.599998"
     },
     {
-      "Symbol": "YHOO2",
-      "Name": "Yahoo2! Inc.",
-      "Change": "0.279999",
-      "PercentChange": "+1.11%",
-      "thirdChange" : "N/A",
-      "LastTradePriceOnly": "50.599998"
+      "Symbol": "AAPL",
+      "Name": "Apple.com Company",
+      "Change": "-0.349999",
+      "PercentChange": "-2.62%",
+      "Capital market" : "749.7B",
+      "LastTradePriceOnly": "143.729998"
+    },
+    {
+      "Symbol": "GOOG",
+      "Name": "Google.com Inc",
+      "Change": "-0.349999",
+      "PercentChange": "-2.62%",
+      "Capital market" : "345.3B",
+      "LastTradePriceOnly": "927.327"
+    },
+    {
+      "Symbol": "GPO",
+      "Name": "GoPro.com LTD",
+      "Change": "0.49999",
+      "PercentChange": "+30.38%",
+      "Capital market" : "1.2B",
+      "LastTradePriceOnly": "11.09"
     }
   ];
 
@@ -38,13 +54,16 @@ const stocksToShow =
   [
     "WIX",
     "MSFT",
-    "YHOO"
+    "YHOO",
+    "AAPL",
+    "GOOG",
+    "GPO"
   ];
 
 const changePreferences = {
   0: "PercentChange",
   1: "Change",
-  2: "thirdChange",
+  2: "Capital market",
   preferredNumber: 0,
   length: 3
 };
@@ -205,7 +224,6 @@ function showFilterPanel(filterButton, mainElement) {
         <div>
           <label for="gain" class="capitalize">by gain</label>
           <select id="gain">
-            <option value="" class="capitalize"></option>
             <option value="all" class="capitalize">all</option>
             <option value="losing" class="capitalize">losing</option>
             <option value="gaining" class="capitalize">gaining</option>
@@ -240,48 +258,25 @@ function filterButtonHandler(filterButton) {
   mainElement.querySelectorAll('li').forEach(hideShowReorderControls);
 }
 
-function filterByName(name) {
-  name = name.toLowerCase();
-  document.querySelectorAll('.stocks li').forEach(function (stockLiElement) {
-    if (!stockLiElement.firstElementChild.textContent.toLowerCase().includes(name)) {
-      stockLiElement.classList.add('hide-stocks');
-    }
-  })
-}
-
-function hideGain() {
-  let classProperty = this.valueOf();
-  document.querySelectorAll('.stocks li').forEach(function (stockLiElement) {
-    if (stockLiElement.querySelector('.change-button').classList.contains(classProperty)) {
-      stockLiElement.classList.add('hide-stocks');
-    }
-  })
-}
-
-function filterByGain(gain) {
-  switch (gain) {
-    case 'all':
-
-      break;
-
-    case 'losing':
-      hideGain.call('green-button');
-      break;
-
-    case 'gaining':
-      (hideGain.bind('red-button'))();
-      break;
-
-    default:
-
-  }
+function filterFunc(stockLiElement) {
+  let filterParams = this;
+  stockLiElement.classList.remove('hide-stocks');
+  if (!stockLiElement.firstElementChild.textContent.toLowerCase().includes(filterParams[0]) ||
+    (filterParams[1] === 'losing' && stockLiElement.querySelector('.change-button').classList.contains('green-button')) ||
+    (filterParams[1] === 'gaining' && stockLiElement.querySelector('.change-button').classList.contains('red-button')) ||
+  false)
+    stockLiElement.classList.add('hide-stocks');
 }
 
 function applyButtonHandler() {
-  document.querySelectorAll('.stocks li').forEach(resetFilter);
-  filterByName(document.getElementById('name').value);
-  filterByGain(document.getElementById('gain').value);
-  // filterByRange(document.getElementById('range-from'));
+  const filterParams = [
+    document.getElementById('name').value.toLowerCase(),
+    document.getElementById('gain').value,
+    document.getElementById('range-from').value,
+    document.getElementById('range-to').value
+  ];
+
+  document.querySelectorAll('.stocks li').forEach(filterFunc.bind(filterParams));
 }
 
 function changeButtonHandler(){
