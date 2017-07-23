@@ -50,23 +50,25 @@ const stocks =
     }
   ];
 
-const stocksToShow =
-  [
-    "WIX",
-    "GOOG",
-    "YHOO",
-    "AAPL",
-    "GPO",
-    "MSFT"
-  ];
-
-const changePreferences = {
-  0: "PercentChange",
-  1: "Change",
-  2: "CapitalMarket",
+const state = {
+  stocksToShow:
+    [
+      "WIX",
+      "GOOG",
+      "YHOO",
+      "AAPL",
+      "GPO",
+      "MSFT",
+      "AAPL"
+    ],
   preferredNumber: 0,
-  length: 3
-};
+  changePreferences: {
+    0: "PercentChange",
+    1: "Change",
+    2: "CapitalMarket",
+    length: 3
+  }
+}
 
 function stockFindFunction(stock) {
   return stock.Symbol === this[0];
@@ -78,6 +80,12 @@ function round(number) {
 
 function redOrGreen(num) {
   return num >= 0 ? 'green-button' : 'red-button';
+}
+
+function getStockBySymbol(symbol) {
+  return stocks.find(function (stock) {
+    return stock.Symbol === symbol;
+  });
 }
 
 (function init(stocks, stocksToShow) {
@@ -106,10 +114,10 @@ function redOrGreen(num) {
   function loadStocks() {
     const ulElement = document.querySelector('main > ul');
     let stock;
-    ulElement.innerHTML = stocksToShow.reduce(
+    ulElement.innerHTML = state.stocksToShow.reduce(
       function (html, stockSymbol, index) {
         if (stock = stocks.find(stockFindFunction.bind([stockSymbol])))
-          return html + addStock(stock, (index === 0 && 'disabled' ) || '', (index === (stocksToShow.length - 1) && 'disabled' ) || '');
+          return html + addStock(stock, (index === 0 && 'disabled' ) || '', (index === (state.stocksToShow.length - 1) && 'disabled' ) || '');
         return html;
       }, '');
   }
@@ -122,8 +130,8 @@ function redOrGreen(num) {
       </div>
       <div class="box-numbers">
         ${round(stock.LastTradePriceOnly)}     
-        <button class="change-button ${redOrGreen(Number(stock.PercentChange.substr(0, stock.PercentChange.length - 1)))}">
-          ${stock.PercentChange} 
+        <button class="change-button ${redOrGreen(Number(stock.Change))}">
+          ${changeToShow(stock)} 
         </button>     
         <div class="box-arrow" data-symbol="${stock.Symbol}">       
           <button class="icon-arrow up-button arrow-button" ${upDisabled}></button>
@@ -137,12 +145,12 @@ function redOrGreen(num) {
   loadStocks();
 
   setHandler('body', stockHandle);
-}(stocks, stocksToShow));
+}(stocks, state.stocksToShow));
 
 function swapStocks(stockIndex, newPosition) {
-  let tempStock = stocksToShow[stockIndex];
-  stocksToShow[stockIndex] = stocksToShow[stockIndex + newPosition];
-  stocksToShow[stockIndex + newPosition] = tempStock;
+  let tempStock = state.stocksToShow[stockIndex];
+  state.stocksToShow[stockIndex] = state.stocksToShow[stockIndex + newPosition];
+  state.stocksToShow[stockIndex + newPosition] = tempStock;
 }
 
 function swapInnerHTML(firstSwapStock, secondSwapStock) {
@@ -165,10 +173,10 @@ function swapLiButtonsDisabledValue(firstSwapStockLiElement, secondSwapStockLiEl
 }
 
 function swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition) {
-  firstSwapStockLiElement.classList.remove(stocksToShow[stockIndex]);
-  secondSwapStockLiElement.classList.remove(stocksToShow[stockIndex + newPosition]);
-  firstSwapStockLiElement.classList.add(stocksToShow[stockIndex + newPosition]);
-  secondSwapStockLiElement.classList.add(stocksToShow[stockIndex]);
+  firstSwapStockLiElement.classList.remove(state.stocksToShow[stockIndex]);
+  secondSwapStockLiElement.classList.remove(state.stocksToShow[stockIndex + newPosition]);
+  firstSwapStockLiElement.classList.add(state.stocksToShow[stockIndex + newPosition]);
+  secondSwapStockLiElement.classList.add(state.stocksToShow[stockIndex]);
 }
 
 function upDownHandler(buttonElement) {
@@ -176,14 +184,12 @@ function upDownHandler(buttonElement) {
 
   let symbol = buttonElement.parentElement.getAttribute('data-symbol');
 
-  let stockIndex = 0;
-  stocksToShow.find((stockSymbol, index) => {
-    stockIndex = index;
+  let stockIndex = state.stocksToShow.findIndex((stockSymbol, index) => {
     return stockSymbol === symbol
   });
 
-  let firstSwapStockLiElement = document.querySelector('.' + stocksToShow[stockIndex]);
-  let secondSwapStockLiElement = document.querySelector('.' + stocksToShow[stockIndex + newPosition]);
+  let firstSwapStockLiElement = document.querySelector('.' + state.stocksToShow[stockIndex]);
+  let secondSwapStockLiElement = document.querySelector('.' + state.stocksToShow[stockIndex + newPosition]);
 
   swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition);
 
@@ -260,14 +266,12 @@ function filterButtonHandler(filterButton) {
 function filterFunc(stockLiElement) {
   let filterParams = this;
   let symbol = stockLiElement.querySelector('h2').innerText;
-  let stockPercentChange = 0;
 
-  stocks.find(function (stock) {
-    stockPercentChange = stock.PercentChange;
-    return stock.Symbol === symbol;
-  });
+  let stock = getStockBySymbol(symbol);
+  if (!stock)
+    return;
 
-  stockPercentChange = Number(stockPercentChange.substr(0,stockPercentChange.length-1));
+  let stockPercentChange = Number(stock.PercentChange.substr(0,stock.PercentChange.length-1));
 
   stockLiElement.classList.remove('hide-stocks');
   if (!stockLiElement.firstElementChild.textContent.toLowerCase().includes(filterParams[0]) ||
@@ -290,13 +294,23 @@ function applyButtonHandler() {
   document.querySelectorAll('.stocks li').forEach(filterFunc.bind(filterParams));
 }
 
+function changeToShow(stock) {
+  let changeType = state.changePreferences[state.preferredNumber];
+  return changeType === 'Change' ? round(stock[changeType]) : stock[changeType];
+}
+
 function changeButtonHandler(){
-  changePreferences.preferredNumber = (changePreferences.preferredNumber+1) % changePreferences.length;
-  let newPreference = changePreferences[changePreferences.preferredNumber];
+  state.preferredNumber = (state.preferredNumber+1) % state.changePreferences.length;
+  let newPreference = state.changePreferences[state.preferredNumber];
 
   let buttonElements = document.querySelectorAll('.change-button');
-  buttonElements.forEach((buttonElement, index) =>
-    buttonElement.innerText = newPreference === 'Change' ? round(stocks[index][newPreference]) : stocks[index][newPreference]);
+  buttonElements.forEach((buttonElement, index) => {
+    let stockSymbol = buttonElement.nextElementSibling.getAttribute('data-symbol');
+    buttonElement.innerHTML = changeToShow(stocks.find(function (stock) {
+      return stock.Symbol === stockSymbol;
+    }));
+  });
+    // buttonElement.innerText = newPreference === 'Change' ? round(stocks[index][newPreference]) : stocks[index][newPreference]);
 }
 
 function stockHandle(ev) {

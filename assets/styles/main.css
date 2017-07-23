@@ -18,7 +18,7 @@ body {
   overflow-y: scroll;
 }
 
-body header button,
+body > header button,
 a {
   text-decoration: none;
   color: #ababab;
@@ -59,7 +59,7 @@ body {
 }
 
 
-body header {
+body > header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -112,6 +112,11 @@ main > header {
   height: 162px;
   background-color: white;
   margin-bottom: 2px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
 }
 
 .div-filter {
