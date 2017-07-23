@@ -109,18 +109,52 @@ body main {
 /*------------body main header-----------*/
 
 main > header {
-  height: 162px;
+  height: 161px;
   background-color: white;
   margin-bottom: 2px;
-
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 30px;
+  padding: 0 29px;
+  align-content: stretch;
 }
 
-.div-filter {
+.div-filter-range,
+.div-filter-name-gain {
   color: #59737c;
+  display: flex;
+  flex-flow: column;
+  height: inherit;
+  justify-content: space-around;
+  width: 38%;
+}
+
+.div-filter-range div,
+.div-filter-name-gain div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.div-filter-range {
+  width: 46%;
+}
+
+main header label {
+  font-size: 26px;
+}
+
+main header input,
+main header select {
+  font-size: 26px;
+  width: 70%;
+  height: 55px;
+  border-radius: 10px;
+}
+
+.div-filter-range input {
+  width: 70%;
 }
 
 .apply-button {

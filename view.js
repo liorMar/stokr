@@ -1,0 +1,1 @@
+window.Stokr = window.Stokr || {};

@@ -1,74 +1,75 @@
-const stocks =
-  [
-    {
-      "Symbol": "WIX",
-      "Name": "Wix.com Ltd.",
-      "Change": "0.750000",
-      "PercentChange": "+1.51%",
-      "CapitalMarket" : "3.4B",
-      "LastTradePriceOnly": "76.099998"
-    },
-    {
-      "Symbol": "MSFT",
-      "Name": "Microsoft Corporation",
-      "PercentChange": "-2.09%",
-      "Change": "-0.850006",
-      "CapitalMarket" : "7.2B",
-      "LastTradePriceOnly": "69.620003"
-    },
-    {
-      "Symbol": "YHOO",
-      "Name": "Yahoo! Inc.",
-      "Change": "0.279999",
-      "PercentChange": "+1.11%",
-      "CapitalMarket" : "4.7B",
-      "LastTradePriceOnly": "50.599998"
-    },
-    {
-      "Symbol": "AAPL",
-      "Name": "Apple.com Company",
-      "Change": "-0.349999",
-      "PercentChange": "-2.62%",
-      "CapitalMarket" : "749.7B",
-      "LastTradePriceOnly": "143.729998"
-    },
-    {
-      "Symbol": "GOOG",
-      "Name": "Google.com Inc",
-      "Change": "-0.349999",
-      "PercentChange": "-2.62%",
-      "CapitalMarket" : "345.3B",
-      "LastTradePriceOnly": "927.327"
-    },
-    {
-      "Symbol": "GPO",
-      "Name": "GoPro.com LTD",
-      "Change": "0.49999",
-      "PercentChange": "+30.38%",
-      "CapitalMarket" : "1.2B",
-      "LastTradePriceOnly": "11.09"
-    }
-  ];
+window.Stokr = window.Stokr || {};
 
-const state = {
-  stocksToShow:
-    [
-      "WIX",
-      "GOOG",
-      "YHOO",
-      "AAPL",
-      "GPO",
-      "MSFT",
-      "AAPL"
-    ],
-  preferredNumber: 0,
-  changePreferences: {
-    0: "PercentChange",
-    1: "Change",
-    2: "CapitalMarket",
-    length: 3
-  }
-}
+// const stocks =
+//   [
+//     {
+//       "Symbol": "WIX",
+//       "Name": "Wix.com Ltd.",
+//       "Change": "0.750000",
+//       "PercentChange": "+1.51%",
+//       "CapitalMarket" : "3.4B",
+//       "LastTradePriceOnly": "76.099998"
+//     },
+//     {
+//       "Symbol": "MSFT",
+//       "Name": "Microsoft Corporation",
+//       "PercentChange": "-2.09%",
+//       "Change": "-0.850006",
+//       "CapitalMarket" : "7.2B",
+//       "LastTradePriceOnly": "69.620003"
+//     },
+//     {
+//       "Symbol": "YHOO",
+//       "Name": "Yahoo! Inc.",
+//       "Change": "0.279999",
+//       "PercentChange": "+1.11%",
+//       "CapitalMarket" : "4.7B",
+//       "LastTradePriceOnly": "50.599998"
+//     },
+//     {
+//       "Symbol": "AAPL",
+//       "Name": "Apple.com Company",
+//       "Change": "-0.349999",
+//       "PercentChange": "-2.62%",
+//       "CapitalMarket" : "749.7B",
+//       "LastTradePriceOnly": "143.729998"
+//     },
+//     {
+//       "Symbol": "GOOG",
+//       "Name": "Google.com Inc",
+//       "Change": "-0.349999",
+//       "PercentChange": "-2.62%",
+//       "CapitalMarket" : "345.3B",
+//       "LastTradePriceOnly": "927.327"
+//     },
+//     {
+//       "Symbol": "GPO",
+//       "Name": "GoPro.com LTD",
+//       "Change": "0.49999",
+//       "PercentChange": "+30.38%",
+//       "CapitalMarket" : "1.2B",
+//       "LastTradePriceOnly": "11.09"
+//     }
+//   ];
+//
+// const state = {
+//   stocksToShow:
+//     [
+//       "WIX",
+//       "GOOG",
+//       "YHOO",
+//       "AAPL",
+//       "GPO",
+//       "MSFT",
+//       "AAPL"
+//     ],
+//   preferredNumber: 0,
+//   changePreferences: [
+//     "PercentChange",
+//     "Change",
+//     "CapitalMarket"
+//   ]
+// };
 
 function stockFindFunction(stock) {
   return stock.Symbol === this[0];
@@ -83,7 +84,7 @@ function redOrGreen(num) {
 }
 
 function getStockBySymbol(symbol) {
-  return stocks.find(function (stock) {
+  return window.Stokr.model.getStocks().find(function (stock) {
     return stock.Symbol === symbol;
   });
 }
@@ -112,14 +113,21 @@ function getStockBySymbol(symbol) {
   }
 
   function loadStocks() {
-    const ulElement = document.querySelector('main > ul');
+    // const ulElement = document.querySelector('main');
+
     let stock;
-    ulElement.innerHTML = state.stocksToShow.reduce(
+    let ulInnerHTML = state.stocksToShow.reduce(
       function (html, stockSymbol, index) {
         if (stock = stocks.find(stockFindFunction.bind([stockSymbol])))
           return html + addStock(stock, (index === 0 && 'disabled' ) || '', (index === (state.stocksToShow.length - 1) && 'disabled' ) || '');
         return html;
       }, '');
+
+    document.querySelector('main').innerHTML = `
+    <ul class="stocks">
+      ${ulInnerHTML}
+    </ul>
+    `
   }
 
   function addStock(stock, upDisabled, downDisabled) {
@@ -145,7 +153,7 @@ function getStockBySymbol(symbol) {
   loadStocks();
 
   setHandler('body', stockHandle);
-}(stocks, state.stocksToShow));
+}(window.Stokr.model.getStocks()));
 
 function swapStocks(stockIndex, newPosition) {
   let tempStock = state.stocksToShow[stockIndex];
@@ -218,10 +226,10 @@ function hideFilterPanel(filterButton, mainElement) {
 function showFilterPanel(filterButton, mainElement) {
   let headerElement = document.createElement('header');
 
-  headerElement.classList.add('div-filter');
+  // headerElement.classList.add('div-filter');
 
   headerElement.innerHTML = `
-    <div>
+    <div class="div-filter-name-gain">
         <div>
           <label for="name" class="capitalize">by name</label>
           <input type="text" id="name">
@@ -234,6 +242,8 @@ function showFilterPanel(filterButton, mainElement) {
             <option value="gaining" class="capitalize">gaining</option>
           </select>
         </div>
+    </div>
+    <div class="div-filter-range">
         <div>
           <label for="range-from" class="capitalize">by range: from</label>
           <input type="number" id="range-from">
@@ -301,16 +311,12 @@ function changeToShow(stock) {
 
 function changeButtonHandler(){
   state.preferredNumber = (state.preferredNumber+1) % state.changePreferences.length;
-  let newPreference = state.changePreferences[state.preferredNumber];
 
   let buttonElements = document.querySelectorAll('.change-button');
   buttonElements.forEach((buttonElement, index) => {
     let stockSymbol = buttonElement.nextElementSibling.getAttribute('data-symbol');
-    buttonElement.innerHTML = changeToShow(stocks.find(function (stock) {
-      return stock.Symbol === stockSymbol;
-    }));
+    buttonElement.innerHTML = changeToShow(getStockBySymbol(stockSymbol));
   });
-    // buttonElement.innerText = newPreference === 'Change' ? round(stocks[index][newPreference]) : stocks[index][newPreference]);
 }
 
 function stockHandle(ev) {
