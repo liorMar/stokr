@@ -5,7 +5,7 @@ const stocks =
       "Name": "Wix.com Ltd.",
       "Change": "0.750000",
       "PercentChange": "+1.51%",
-      "Capital market" : "3.4B",
+      "CapitalMarket" : "3.4B",
       "LastTradePriceOnly": "76.099998"
     },
     {
@@ -13,7 +13,7 @@ const stocks =
       "Name": "Microsoft Corporation",
       "PercentChange": "-2.09%",
       "Change": "-0.850006",
-      "Capital market" : "7.2B",
+      "CapitalMarket" : "7.2B",
       "LastTradePriceOnly": "69.620003"
     },
     {
@@ -21,7 +21,7 @@ const stocks =
       "Name": "Yahoo! Inc.",
       "Change": "0.279999",
       "PercentChange": "+1.11%",
-      "Capital market" : "4.7B",
+      "CapitalMarket" : "4.7B",
       "LastTradePriceOnly": "50.599998"
     },
     {
@@ -29,7 +29,7 @@ const stocks =
       "Name": "Apple.com Company",
       "Change": "-0.349999",
       "PercentChange": "-2.62%",
-      "Capital market" : "749.7B",
+      "CapitalMarket" : "749.7B",
       "LastTradePriceOnly": "143.729998"
     },
     {
@@ -37,7 +37,7 @@ const stocks =
       "Name": "Google.com Inc",
       "Change": "-0.349999",
       "PercentChange": "-2.62%",
-      "Capital market" : "345.3B",
+      "CapitalMarket" : "345.3B",
       "LastTradePriceOnly": "927.327"
     },
     {
@@ -45,7 +45,7 @@ const stocks =
       "Name": "GoPro.com LTD",
       "Change": "0.49999",
       "PercentChange": "+30.38%",
-      "Capital market" : "1.2B",
+      "CapitalMarket" : "1.2B",
       "LastTradePriceOnly": "11.09"
     }
   ];
@@ -53,17 +53,17 @@ const stocks =
 const stocksToShow =
   [
     "WIX",
-    "MSFT",
+    "GOOG",
     "YHOO",
     "AAPL",
-    "GOOG",
-    "GPO"
+    "GPO",
+    "MSFT"
   ];
 
 const changePreferences = {
   0: "PercentChange",
   1: "Change",
-  2: "Capital market",
+  2: "CapitalMarket",
   preferredNumber: 0,
   length: 3
 };
@@ -116,15 +116,18 @@ function redOrGreen(num) {
 
   function addStock(stock, upDisabled, downDisabled) {
     return `<li class="box ${stock.Symbol}">
-      <h2>${stock.Symbol} (${stock.Name})</h2>   
       <div>
+        <h2>${stock.Symbol}</h2>
+        <h3>(${stock.Name})</h3>
+      </div>
+      <div class="box-numbers">
         ${round(stock.LastTradePriceOnly)}     
         <button class="change-button ${redOrGreen(Number(stock.PercentChange.substr(0, stock.PercentChange.length - 1)))}">
           ${stock.PercentChange} 
         </button>     
         <div class="box-arrow" data-symbol="${stock.Symbol}">       
-          <button class="icon-arrow up-button" ${upDisabled}></button>
-          <button class="icon-arrow down-button" ${downDisabled}></button>
+          <button class="icon-arrow up-button arrow-button" ${upDisabled}></button>
+          <button class="icon-arrow down-button arrow-button" ${downDisabled}></button>
         </div>
       </div>
     </li>`;
@@ -137,9 +140,9 @@ function redOrGreen(num) {
 }(stocks, stocksToShow));
 
 function swapStocks(stockIndex, newPosition) {
-  let tempStock = stocks[stockIndex];
-  stocks[stockIndex] = stocks[stockIndex + newPosition];
-  stocks[stockIndex + newPosition] = tempStock;
+  let tempStock = stocksToShow[stockIndex];
+  stocksToShow[stockIndex] = stocksToShow[stockIndex + newPosition];
+  stocksToShow[stockIndex + newPosition] = tempStock;
 }
 
 function swapInnerHTML(firstSwapStock, secondSwapStock) {
@@ -162,10 +165,10 @@ function swapLiButtonsDisabledValue(firstSwapStockLiElement, secondSwapStockLiEl
 }
 
 function swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition) {
-  firstSwapStockLiElement.classList.remove(stocks[stockIndex].Symbol);
-  secondSwapStockLiElement.classList.remove(stocks[stockIndex + newPosition].Symbol);
-  firstSwapStockLiElement.classList.add(stocks[stockIndex + newPosition].Symbol);
-  secondSwapStockLiElement.classList.add(stocks[stockIndex].Symbol);
+  firstSwapStockLiElement.classList.remove(stocksToShow[stockIndex]);
+  secondSwapStockLiElement.classList.remove(stocksToShow[stockIndex + newPosition]);
+  firstSwapStockLiElement.classList.add(stocksToShow[stockIndex + newPosition]);
+  secondSwapStockLiElement.classList.add(stocksToShow[stockIndex]);
 }
 
 function upDownHandler(buttonElement) {
@@ -174,13 +177,13 @@ function upDownHandler(buttonElement) {
   let symbol = buttonElement.parentElement.getAttribute('data-symbol');
 
   let stockIndex = 0;
-  stocks.find((stock, index) => {
+  stocksToShow.find((stockSymbol, index) => {
     stockIndex = index;
-    return stock.Symbol === symbol
+    return stockSymbol === symbol
   });
 
-  let firstSwapStockLiElement = document.querySelector('.' + stocks[stockIndex].Symbol);
-  let secondSwapStockLiElement = document.querySelector('.' + stocks[stockIndex + newPosition].Symbol);
+  let firstSwapStockLiElement = document.querySelector('.' + stocksToShow[stockIndex]);
+  let secondSwapStockLiElement = document.querySelector('.' + stocksToShow[stockIndex + newPosition]);
 
   swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition);
 
@@ -193,11 +196,7 @@ function upDownHandler(buttonElement) {
 function hideShowReorderControls(liElement) {
   let divElement = liElement.querySelector('.box-arrow');
 
-  if (divElement.classList.contains('box-arrow-hidden')) {
-    divElement.classList.remove('box-arrow-hidden');
-  } else {
-    divElement.classList.add('box-arrow-hidden');
-  }
+  divElement.classList.toggle('box-arrow-hidden');
 }
 
 function resetFilter(stockElement) {
@@ -260,12 +259,24 @@ function filterButtonHandler(filterButton) {
 
 function filterFunc(stockLiElement) {
   let filterParams = this;
+  let symbol = stockLiElement.querySelector('h2').innerText;
+  let stockPercentChange = 0;
+
+  stocks.find(function (stock) {
+    stockPercentChange = stock.PercentChange;
+    return stock.Symbol === symbol;
+  });
+
+  stockPercentChange = Number(stockPercentChange.substr(0,stockPercentChange.length-1));
+
   stockLiElement.classList.remove('hide-stocks');
   if (!stockLiElement.firstElementChild.textContent.toLowerCase().includes(filterParams[0]) ||
-    (filterParams[1] === 'losing' && stockLiElement.querySelector('.change-button').classList.contains('green-button')) ||
-    (filterParams[1] === 'gaining' && stockLiElement.querySelector('.change-button').classList.contains('red-button')) ||
-  false)
+      (filterParams[1] === 'losing' && stockLiElement.querySelector('.change-button').classList.contains('green-button')) ||
+      (filterParams[1] === 'gaining' && stockLiElement.querySelector('.change-button').classList.contains('red-button')) ||
+      (filterParams[2] !== '' && filterParams[2] > stockPercentChange) ||
+      (filterParams[3] !== '' && stockPercentChange > filterParams[3])){
     stockLiElement.classList.add('hide-stocks');
+  }
 }
 
 function applyButtonHandler() {
@@ -289,7 +300,7 @@ function changeButtonHandler(){
 }
 
 function stockHandle(ev) {
-  if (ev.target.classList.contains('icon-arrow')) {
+  if (ev.target.classList.contains('arrow-button')) {
     upDownHandler(ev.target);
   } else if (ev.target.classList.contains('change-button')) {
     changeButtonHandler();
