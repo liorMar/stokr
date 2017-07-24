@@ -1,76 +1,5 @@
 window.Stokr = window.Stokr || {};
 
-// const stocks =
-//   [
-//     {
-//       "Symbol": "WIX",
-//       "Name": "Wix.com Ltd.",
-//       "Change": "0.750000",
-//       "PercentChange": "+1.51%",
-//       "CapitalMarket" : "3.4B",
-//       "LastTradePriceOnly": "76.099998"
-//     },
-//     {
-//       "Symbol": "MSFT",
-//       "Name": "Microsoft Corporation",
-//       "PercentChange": "-2.09%",
-//       "Change": "-0.850006",
-//       "CapitalMarket" : "7.2B",
-//       "LastTradePriceOnly": "69.620003"
-//     },
-//     {
-//       "Symbol": "YHOO",
-//       "Name": "Yahoo! Inc.",
-//       "Change": "0.279999",
-//       "PercentChange": "+1.11%",
-//       "CapitalMarket" : "4.7B",
-//       "LastTradePriceOnly": "50.599998"
-//     },
-//     {
-//       "Symbol": "AAPL",
-//       "Name": "Apple.com Company",
-//       "Change": "-0.349999",
-//       "PercentChange": "-2.62%",
-//       "CapitalMarket" : "749.7B",
-//       "LastTradePriceOnly": "143.729998"
-//     },
-//     {
-//       "Symbol": "GOOG",
-//       "Name": "Google.com Inc",
-//       "Change": "-0.349999",
-//       "PercentChange": "-2.62%",
-//       "CapitalMarket" : "345.3B",
-//       "LastTradePriceOnly": "927.327"
-//     },
-//     {
-//       "Symbol": "GPO",
-//       "Name": "GoPro.com LTD",
-//       "Change": "0.49999",
-//       "PercentChange": "+30.38%",
-//       "CapitalMarket" : "1.2B",
-//       "LastTradePriceOnly": "11.09"
-//     }
-//   ];
-//
-// const state = {
-//   stocksToShow:
-//     [
-//       "WIX",
-//       "GOOG",
-//       "YHOO",
-//       "AAPL",
-//       "GPO",
-//       "MSFT",
-//       "AAPL"
-//     ],
-//   preferredNumber: 0,
-//   changePreferences: [
-//     "PercentChange",
-//     "Change",
-//     "CapitalMarket"
-//   ]
-// };
-
 function stockFindFunction(stock) {
   return stock.Symbol === this[0];
 }
@@ -89,7 +18,7 @@ function getStockBySymbol(symbol) {
   });
 }
 
-(function init(stocks, stocksToShow) {
+(function init(stocks, state) {
   function loadHeader() {
     document.querySelector('body header').innerHTML = `
     <h1 class="logo">stokr</h1>
@@ -119,7 +48,7 @@ function getStockBySymbol(symbol) {
     let ulInnerHTML = state.stocksToShow.reduce(
       function (html, stockSymbol, index) {
         if (stock = stocks.find(stockFindFunction.bind([stockSymbol])))
-          return html + addStock(stock, (index === 0 && 'disabled' ) || '', (index === (state.stocksToShow.length - 1) && 'disabled' ) || '');
+          return html + buildStockLi(stock, (index === 0 && 'disabled' ) || '', (index === (state.stocksToShow.length - 1) && 'disabled' ) || '');
         return html;
       }, '');
 
@@ -130,8 +59,9 @@ function getStockBySymbol(symbol) {
     `
   }
 
-  function addStock(stock, upDisabled, downDisabled) {
-    return `<li class="box ${stock.Symbol}">
+  function buildStockLi(stock, upDisabled, downDisabled) {
+    return `
+    <li class="box ${stock.Symbol}">
       <div>
         <h2>${stock.Symbol}</h2>
         <h3>(${stock.Name})</h3>
@@ -153,12 +83,12 @@ function getStockBySymbol(symbol) {
   loadStocks();
 
   setHandler('body', stockHandle);
-}(window.Stokr.model.getStocks()));
+}(window.Stokr.model.getStocks(), window.Stokr.model.getState()));
 
 function swapStocks(stockIndex, newPosition) {
-  let tempStock = state.stocksToShow[stockIndex];
-  state.stocksToShow[stockIndex] = state.stocksToShow[stockIndex + newPosition];
-  state.stocksToShow[stockIndex + newPosition] = tempStock;
+  let tempStock = window.Stokr.model.getState().stocksToShow[stockIndex];
+  window.Stokr.model.getState().stocksToShow[stockIndex] = window.Stokr.model.getState().stocksToShow[stockIndex + newPosition];
+  window.Stokr.model.getState().stocksToShow[stockIndex + newPosition] = tempStock;
 }
 
 function swapInnerHTML(firstSwapStock, secondSwapStock) {
@@ -181,10 +111,10 @@ function swapLiButtonsDisabledValue(firstSwapStockLiElement, secondSwapStockLiEl
 }
 
 function swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition) {
-  firstSwapStockLiElement.classList.remove(state.stocksToShow[stockIndex]);
-  secondSwapStockLiElement.classList.remove(state.stocksToShow[stockIndex + newPosition]);
-  firstSwapStockLiElement.classList.add(state.stocksToShow[stockIndex + newPosition]);
-  secondSwapStockLiElement.classList.add(state.stocksToShow[stockIndex]);
+  firstSwapStockLiElement.classList.remove(window.Stokr.model.getState().stocksToShow[stockIndex]);
+  secondSwapStockLiElement.classList.remove(window.Stokr.model.getState().stocksToShow[stockIndex + newPosition]);
+  firstSwapStockLiElement.classList.add(window.Stokr.model.getState().stocksToShow[stockIndex + newPosition]);
+  secondSwapStockLiElement.classList.add(window.Stokr.model.getState().stocksToShow[stockIndex]);
 }
 
 function upDownHandler(buttonElement) {
@@ -192,12 +122,12 @@ function upDownHandler(buttonElement) {
 
   let symbol = buttonElement.parentElement.getAttribute('data-symbol');
 
-  let stockIndex = state.stocksToShow.findIndex((stockSymbol, index) => {
+  let stockIndex = window.Stokr.model.getState().stocksToShow.findIndex((stockSymbol) => {
     return stockSymbol === symbol
   });
 
-  let firstSwapStockLiElement = document.querySelector('.' + state.stocksToShow[stockIndex]);
-  let secondSwapStockLiElement = document.querySelector('.' + state.stocksToShow[stockIndex + newPosition]);
+  let firstSwapStockLiElement = document.querySelector('.' + window.Stokr.model.getState().stocksToShow[stockIndex]);
+  let secondSwapStockLiElement = document.querySelector('.' + window.Stokr.model.getState().stocksToShow[stockIndex + newPosition]);
 
   swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition);
 
@@ -285,10 +215,10 @@ function filterFunc(stockLiElement) {
 
   stockLiElement.classList.remove('hide-stocks');
   if (!stockLiElement.firstElementChild.textContent.toLowerCase().includes(filterParams[0]) ||
-      (filterParams[1] === 'losing' && stockLiElement.querySelector('.change-button').classList.contains('green-button')) ||
-      (filterParams[1] === 'gaining' && stockLiElement.querySelector('.change-button').classList.contains('red-button')) ||
-      (filterParams[2] !== '' && filterParams[2] > stockPercentChange) ||
-      (filterParams[3] !== '' && stockPercentChange > filterParams[3])){
+    (filterParams[1] === 'losing' && stockLiElement.querySelector('.change-button').classList.contains('green-button')) ||
+    (filterParams[1] === 'gaining' && stockLiElement.querySelector('.change-button').classList.contains('red-button')) ||
+    (filterParams[2] !== '' && filterParams[2] > stockPercentChange) ||
+    (filterParams[3] !== '' && stockPercentChange > filterParams[3])){
     stockLiElement.classList.add('hide-stocks');
   }
 }
@@ -305,12 +235,12 @@ function applyButtonHandler() {
 }
 
 function changeToShow(stock) {
-  let changeType = state.changePreferences[state.preferredNumber];
+  let changeType = window.Stokr.model.getState().changePreferences[window.Stokr.model.getState().preferredNumber];
   return changeType === 'Change' ? round(stock[changeType]) : stock[changeType];
 }
 
 function changeButtonHandler(){
-  state.preferredNumber = (state.preferredNumber+1) % state.changePreferences.length;
+  state.preferredNumber = (window.Stokr.model.getState().preferredNumber+1) % window.Stokr.model.getState().changePreferences.length;
 
   let buttonElements = document.querySelectorAll('.change-button');
   buttonElements.forEach((buttonElement, index) => {
@@ -335,3 +265,76 @@ function setHandler(selector, handler) {
   document.querySelector(selector)
     .addEventListener('click', handler);
 }
+
+
+
+// const stocks =
+//   [
+//     {
+//       "Symbol": "WIX",
+//       "Name": "Wix.com Ltd.",
+//       "Change": "0.750000",
+//       "PercentChange": "+1.51%",
+//       "CapitalMarket" : "3.4B",
+//       "LastTradePriceOnly": "76.099998"
+//     },
+//     {
+//       "Symbol": "MSFT",
+//       "Name": "Microsoft Corporation",
+//       "PercentChange": "-2.09%",
+//       "Change": "-0.850006",
+//       "CapitalMarket" : "7.2B",
+//       "LastTradePriceOnly": "69.620003"
+//     },
+//     {
+//       "Symbol": "YHOO",
+//       "Name": "Yahoo! Inc.",
+//       "Change": "0.279999",
+//       "PercentChange": "+1.11%",
+//       "CapitalMarket" : "4.7B",
+//       "LastTradePriceOnly": "50.599998"
+//     },
+//     {
+//       "Symbol": "AAPL",
+//       "Name": "Apple.com Company",
+//       "Change": "-0.349999",
+//       "PercentChange": "-2.62%",
+//       "CapitalMarket" : "749.7B",
+//       "LastTradePriceOnly": "143.729998"
+//     },
+//     {
+//       "Symbol": "GOOG",
+//       "Name": "Google.com Inc",
+//       "Change": "-0.349999",
+//       "PercentChange": "-2.62%",
+//       "CapitalMarket" : "345.3B",
+//       "LastTradePriceOnly": "927.327"
+//     },
+//     {
+//       "Symbol": "GPO",
+//       "Name": "GoPro.com LTD",
+//       "Change": "0.49999",
+//       "PercentChange": "+30.38%",
+//       "CapitalMarket" : "1.2B",
+//       "LastTradePriceOnly": "11.09"
+//     }
+//   ];
+//
+// const state = {
+//   stocksToShow:
+//     [
+//       "WIX",
+//       "GOOG",
+//       "YHOO",
+//       "AAPL",
+//       "GPO",
+//       "MSFT",
+//       "AAPL"
+//     ],
+//   preferredNumber: 0,
+//   changePreferences: [
+//     "PercentChange",
+//     "Change",
+//     "CapitalMarket"
+//   ]
+// };

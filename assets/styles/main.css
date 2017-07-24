@@ -12,23 +12,35 @@ html {
 }
 
 body {
-  background: white;
+  width: 95%;
+  height: 97%;
+  margin: 3% auto;
+  background-color: #f0f4f7;
+}
+
+main {
+  background-color: inherit;
   border-radius: 10px;
   /*padding: 20px;*/
   overflow-y: scroll;
 }
 
-body > header button,
-a {
-  text-decoration: none;
-  color: #ababab;
+button {
+  border: none;
+  background: none;
 }
 
 ul {
   list-style: none;
 }
 
-.on {
+.panelMain button,
+.panelMain a {
+  text-decoration: none;
+  color: #ababab;
+}
+
+.panelMain .on {
   color: #41bf15;
 }
 
@@ -49,23 +61,13 @@ label.capitalize {
   display: none;
 }
 
-body {
-  width: 85%;
-  margin: 4% auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background-color: #f0f4f7;
-}
-
-
-body > header {
+.panelMain {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 117px;
   background-color: white;
-  /*border-radius: 8px 8px 0 0;*/
+  border-radius: 8px 8px 0 0;
   padding: 0 30px;
   margin-bottom: 2px;
 }
@@ -87,105 +89,101 @@ body > header {
   color: #41bf15;
 }
 
-body > header ul {
+.panelMain ul {
   display: inline-flex;
   justify-content: space-between;
   width: 222px;
   font-family: Glyphter, sans-serif;
 }
 
-body > header li {
+.panelMain li {
   font-size: 40px;
   font-weight: lighter;
 }
 
-body main {
-  background-color: inherit;
+.panelMain li:hover * {
+  color: red;
 }
 
 
+/*main > header {*/
+  /*height: 161px;*/
+  /*background-color: white;*/
+  /*margin-bottom: 2px;*/
+  /*width: 100%;*/
+  /*display: flex;*/
+  /*justify-content: space-between;*/
+  /*align-items: center;*/
+  /*padding: 0 29px;*/
+  /*align-content: stretch;*/
+/*}*/
+
+/*.div-filter-range,*/
+/*.div-filter-name-gain {*/
+  /*color: #59737c;*/
+  /*display: flex;*/
+  /*flex-flow: column;*/
+  /*height: inherit;*/
+  /*justify-content: space-around;*/
+  /*width: 38%;*/
+/*}*/
+
+/*.div-filter-range div,*/
+/*.div-filter-name-gain div {*/
+  /*display: flex;*/
+  /*justify-content: space-between;*/
+  /*align-items: center;*/
+/*}*/
+
+/*.div-filter-range {*/
+  /*width: 46%;*/
+/*}*/
+
+/*main header label {*/
+  /*font-size: 26px;*/
+/*}*/
+
+/*main header input,*/
+/*main header select {*/
+  /*font-size: 26px;*/
+  /*width: 70%;*/
+  /*height: 55px;*/
+  /*border-radius: 10px;*/
+/*}*/
+
+/*.div-filter-range input {*/
+  /*width: 70%;*/
+/*}*/
+
+/*.apply-button {*/
+  /*height: 120px;*/
+  /*width: 120px;*/
+  /*background-color: #41bf15;*/
+  /*border: #247906 solid 1px;*/
+  /*border-radius: 60px;*/
+  /*color: white;*/
+  /*font-size: 30px;*/
+/*}*/
 
 
-/*------------body main header-----------*/
-
-main > header {
-  height: 161px;
-  background-color: white;
-  margin-bottom: 2px;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 29px;
-  align-content: stretch;
-}
-
-.div-filter-range,
-.div-filter-name-gain {
-  color: #59737c;
-  display: flex;
-  flex-flow: column;
-  height: inherit;
-  justify-content: space-around;
-  width: 38%;
-}
-
-.div-filter-range div,
-.div-filter-name-gain div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.div-filter-range {
-  width: 46%;
-}
-
-main header label {
-  font-size: 26px;
-}
-
-main header input,
-main header select {
-  font-size: 26px;
-  width: 70%;
-  height: 55px;
-  border-radius: 10px;
-}
-
-.div-filter-range input {
-  width: 70%;
-}
-
-.apply-button {
-  height: 120px;
-  width: 120px;
-  background-color: #41bf15;
-  border: #247906 solid 1px;
-  border-radius: 60px;
-  color: white;
-  font-size: 30px;
-}
+/*!*------------body main ul-----------*!*/
 
 
-/*------------body main ul-----------*/
-
-
-body main li {
+.stocks li {
   height: 117px;
   background-color: white;
   font-family: Avenir, sans-serif;
 }
 
-body main li h2,
-body main li h3 {
+.stocks h2,
+.stocks h3 {
   font-size: 33px;
   font-weight: 300;
   color: #59737c;
   display: inline-block;
 }
 
-body main li > .box-numbers {
+.box-numbers {
   font-family: HelveticaNeueW01-55Roman, sans-serif;
   font-size: 30px;
   color: #59737c;
@@ -195,18 +193,8 @@ body main li > .box-numbers {
   line-height: 60px;
 }
 
-body main li:last-of-type {
-  /*border-radius: 0 0 8px 8px ;*/
-}
-
-body header li:hover * {
-  color: red;
-}
-
-.box-arrow button,
-body header li button {
-  border: none;
-  background: none;
+.stocks li:last-of-type {
+  border-radius: 0 0 8px 8px ;
 }
 
 .change-button {
