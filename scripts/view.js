@@ -23,23 +23,25 @@ function _renderMainPage(stocks, state) {
             <button class="refresh-button icon-refresh"></button>
           </li>
           <li>
-            <button class="filter-button icon-filter ${areOn(state.filterState)}"></button>
+            <button class="filter-button icon-filter ${_areOn(state.filterState)}"></button>
           </li>
           <li>
-            <button class="settings-button icon-settings ${areOn(state.editState)}"></button>
+            <button class="edit-button icon-settings ${_areOn(state.editState)}"></button>
           </li>
         </ul>
-      </div>` + loadStocks(stocks, state);
+      </div>
+      ${_loadFilter(state)}
+      ${_loadStocks(stocks, state)}`;
   }
 }
 
-function areOn(state) {
+function _areOn(state) {
   return state ? 'on' : '';
 }
 
-function loadStocks(stocks, state) {
+function _loadStocks(stocks, state) {
   let ulInnerHTML = stocks.reduce(function (html, stock, index) {
-    return html + buildStockLi(stock, state, (index === 0 && 'disabled' ) || '', (index === (stocks.length - 1) && 'disabled' ) || '');
+    return html + _buildStockLi(stock, state, (index === 0 && 'disabled' ) || '', (index === (stocks.length - 1) && 'disabled' ) || '');
   }, '');
 
   return `
@@ -48,10 +50,11 @@ function loadStocks(stocks, state) {
     </ul>`;
 }
 
-function buildStockLi(stock, state, upDisabled, downDisabled) {
+function _buildStockLi(stock, state, upDisabled, downDisabled) {
   return `
     <li class="box" id="${stock.Symbol}">
-      <div>
+      <div class="stock-name">
+        <button class="remove-button ${state.editState ? '' : 'ignore'}"></button>
         <h2>${stock.Symbol}</h2>
         <h3>(${stock.Name})</h3>
       </div>
@@ -60,7 +63,7 @@ function buildStockLi(stock, state, upDisabled, downDisabled) {
         <button class="change-button ${_redOrGreen(Number(stock.Change))}">
           ${_changeToShow(stock, state)} 
         </button>     
-        <div class="box-arrow" data-symbol="${stock.Symbol}">       
+        <div class="box-arrow ${state.filterState ? 'box-arrow-hidden' : ''}" data-symbol="${stock.Symbol}">       
           <button class="icon-arrow up-button arrow-button" ${upDisabled}></button>
           <button class="icon-arrow down-button arrow-button" ${downDisabled}></button>
         </div>
@@ -81,41 +84,77 @@ function _redOrGreen(num) {
   return num >= 0 ? 'green-button' : 'red-button';
 }
 
+function _loadFilter(state) {
+  if (state.filterState) {
+    return `
+    <div class="filter">
+      <div class="div-filter-name-gain">
+          <div>
+            <label for="name" class="capitalize">by name</label>
+            <input type="text" id="name" value="${state.filterData.name}">
+          </div>
+          <div>
+            <label for="gain" class="capitalize">by gain</label>
+            <select id="gain">
+              <option value="all" class="capitalize" ${state.filterData.gain === 'all' ? 'selected' : ''}>all</option>
+              <option value="losing" class="capitalize" ${state.filterData.gain === 'losing' ? 'selected' : ''}>losing</option>
+              <option value="gaining" class="capitalize" ${state.filterData.gain === 'gaining' ? 'selected' : ''}>gaining</option>
+            </select>
+          </div>
+      </div>
+      <div class="div-filter-range">
+          <div>
+            <label for="range-from" class="capitalize">by range: from</label>
+            <input type="number" id="range-from" value="${state.filterData.from}">
+          </div>
+          <div>
+            <label for="range-to" class="capitalize">by range: to</label>
+            <input type="number" id="range-to" value="${state.filterData.to}">
+          </div>
+      </div>
+      <button class="apply-button">Apply</button>
+  </div>
+  `;
+  }
+
+  return '';
+}
+
 function _setListener(selector, eventType, handler) {
   document.querySelector(selector)
     .addEventListener(eventType, function (ev) {
       if (ev.target.classList.contains('up-button')) {
-        handler('up', [getClosestParent(ev.target, 'li').id]);
+        handler('up', [_getClosestParent(ev.target, 'li').id]);
       } else if (ev.target.classList.contains('down-button')) {
-        handler('down', [getClosestParent(ev.target, 'li').id]);
+        handler('down', [_getClosestParent(ev.target, 'li').id]);
       } else if (ev.target.classList.contains('change-button')) {
         handler('change');
       } else if (ev.target.classList.contains('filter-button')) {
         handler('filter');
+      } else if (ev.target.classList.contains('edit-button')) {
+        handler('edit');
       } else if (ev.target.classList.contains('apply-button')) {
-        handler('apply', []);
+        handler('apply', _extractFilterParams());
+      } else if (ev.target.classList.contains('remove-button')) {
+        handler('remove', [_getClosestParent(ev.target, 'li').id]);
       }
     });
 }
 
-function getClosestParent(element, localName) {
+function _extractFilterParams() {
+  return {
+    name: document.getElementById('name').value,
+    gain: document.getElementById('gain').value,
+    from: document.getElementById('range-from').value,
+    to: document.getElementById('range-to').value
+  };
+}
+
+function _getClosestParent(element, localName) {
   if (element.parentElement && element.parentElement.localName === localName)
     return element.parentElement;
   else if (!element.parentElement || element.parentElement.localName === 'html')
     return undefined;
 
-  return getClosestParent(element.parentElement, localName);
-}
-
-function swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition, stocksToShow) {
-  firstSwapStockLiElement.classList.remove(stocksToShow[stockIndex]);
-  secondSwapStockLiElement.classList.remove(stocksToShow[stockIndex + newPosition]);
-  firstSwapStockLiElement.classList.add(stocksToShow[stockIndex + newPosition]);
-  secondSwapStockLiElement.classList.add(stocksToShow[stockIndex]);
-}
-
-function swapInnerHTML(firstSwapElement, secondSwapElement) {
-  let tempHTML = firstSwapElement.innerHTML;
-  firstSwapElement.innerHTML = secondSwapElement.innerHTML;
-  secondSwapElement.innerHTML = tempHTML;
+  return _getClosestParent(element.parentElement, localName);
 }

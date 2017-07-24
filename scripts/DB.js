@@ -6,17 +6,18 @@ window.Stokr.DB = {
   getStocks: _getStocks,
   getStockBySymbol: _getStockBySymbol,
   getState: _getState,
-  updateStocksToShow: _updateStocksToShow
+  updateStocksToShow: _updateStocksToShow,
+  updateFilterData: _updateFilterData
 };
 
-function _getStocks(stockSymbols) {
+function _getStocks(callback, stockSymbols) {
   if (stockSymbols) {
-    return stockSymbols.reduce(function (stocks, symbol) {
+    callback(stockSymbols.reduce(function (stocks, symbol) {
       stocks.push(_getStockBySymbol(symbol));
       return stocks;
-    }, []);
+    }, []));
   } else {
-    return stocks.slice();
+    callback(stocks.slice());
   }
 }
 
@@ -26,12 +27,16 @@ function _getStockBySymbol(symbol) {
   })));
 }
 
-function _getState() {
-  return state;
+function _getState(callback) {
+  callback(state);
 }
 
 function _updateStocksToShow(newStocksToShow) {
   state.stocksToShow = newStocksToShow;
+}
+
+function _updateFilterData(newfilterData) {
+  state.filterData = newfilterData;
 }
 
 let state = {
@@ -44,15 +49,21 @@ let state = {
     "MSFT"
   ],
   preferredChange: 2,
-  filterState: false,
+  filterState: true,
   editState: false,
   searchState: false,
   changePreferences: [
     "PercentChange",
     "Change",
     "CapitalMarket"
-  ]
-}
+  ],
+  filterData: {
+    name: '',
+    gain: 'all',
+    from: '',
+    to: ''
+  }
+};
 
 let stocks =
   [

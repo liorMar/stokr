@@ -225,7 +225,7 @@ function filterFunc(stockLiElement) {
 
 function applyButtonHandler() {
   const filterParams = [
-    document.getElementById('name').value.toLowerCase(),
+    document.getElementById('name').value,
     document.getElementById('gain').value,
     document.getElementById('range-from').value,
     document.getElementById('range-to').value

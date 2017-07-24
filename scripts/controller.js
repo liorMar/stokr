@@ -7,16 +7,23 @@ window.Stokr.controller = {
 };
 
 (function init(){
-  let state = window.Stokr.DB.getState();
-  window.Stokr.model.state = state;
-
-  let stocks = window.Stokr.DB.getStocks(state.stocksToShow);
-
-  window.Stokr.view.renderMainPage(stocks, state);
-  window.Stokr.view.setListener('body', 'click', stockHandle);
+  window.Stokr.DB.getState(function (state) {
+    window.Stokr.model.state = state;
+    window.Stokr.DB.getStocks(function (stocks) {
+      state.stocks = stocks;
+      loadStocksToView(state);
+      window.Stokr.view.setListener('body', 'click', stockHandle);
+    }, state.stocksToShow);
+  });
 }());
 
-
+function loadStocksToView(state, stocks) {
+  if (state.filterState){
+    applyHandler(state.filterData);
+  } else {
+    window.Stokr.view.renderMainPage(stocks, state);
+  }
+}
 
 function stockHandle(action, args) {
   switch (action) {
@@ -30,22 +37,18 @@ function stockHandle(action, args) {
       upDownHandler(args[0], 1);
       break;
     case 'filter':
-
+      toggleHandler('filterState');
       break;
     case 'apply':
-
+      applyHandler(args);
+      break;
+    case 'edit':
+      toggleHandler('editState');
+      break;
+    case 'remove':
+      removeSymbol(args[0]);
       break;
   }
-
-  // if (ev.target.classList.contains('arrow-button')) {
-  //   upDownHandler(ev.target);
-  // } else if (ev.target.classList.contains('change-button')) {
-  //
-  // } else if (ev.target.classList.contains('filter-button')) {
-  //   filterButtonHandler(ev.target);
-  // } else if (ev.target.classList.contains('apply-button')) {
-  //   applyButtonHandler();
-  // }
 }
 
 function upDownHandler(symbol, action) {
@@ -58,31 +61,8 @@ function upDownHandler(symbol, action) {
   if (oldIndex !== -1) {
     swapSymbols(state, oldIndex, oldIndex+action);
     window.Stokr.DB.updateStocksToShow(state.stocksToShow);
-    window.Stokr.view.renderMainPage(window.Stokr.DB.getStocks(state.stocksToShow), state);
+    loadStocksToView(state);
   }
-
-  // let symbol = buttonElement.parentElement.getAttribute('data-symbol');
-  //
-  // let stockIndex = stocksToShow.findIndex((stockSymbol) => {
-  //   return stockSymbol === symbol
-  // });
-  //
-  // let firstSwapStockLiElement = window.Stokr.view.getElementBySelector('.' + stocksToShow[stockIndex]);
-  // let secondSwapStockLiElement = window.Stokr.view.getElementBySelector('.' + stocksToShow[stockIndex + newPosition]);
-  //
-  // swapLiStockClass(firstSwapStockLiElement, stockIndex, secondSwapStockLiElement, newPosition, stocksToShow);
-  //
-  // swapLiButtonsDisabledValue(firstSwapStockLiElement, secondSwapStockLiElement);
-  //
-  // swapInnerHTML(firstSwapStockLiElement, secondSwapStockLiElement);
-  // swapStocks(stockIndex, newPosition);
-}
-
-function changeButtonHandler(){
-  let state = window.Stokr.model.state;
-  state.preferredChange = (state.preferredChange+1) % state.changePreferences.length;
-
-  window.Stokr.view.renderMainPage(window.Stokr.DB.getStocks(state.stocksToShow), state);
 }
 
 function swapSymbols(state, oldIndex, newIndex) {
@@ -90,18 +70,59 @@ function swapSymbols(state, oldIndex, newIndex) {
   state.stocksToShow.splice(newIndex, 0, firstSymbol);
 }
 
-function swapLiButtonsDisabledValue(firstSwapStockLiElement, secondSwapStockLiElement) {
-  let firstSwapStockDivArrowElement = firstSwapStockLiElement.querySelector('.box-arrow');
-  let secondSwapStockDivArrowElement = secondSwapStockLiElement.querySelector('.box-arrow');
+function changeButtonHandler(){
+  let state = window.Stokr.model.state;
+  state.preferredChange = (state.preferredChange+1) % state.changePreferences.length;
 
-  let tempDisabled = firstSwapStockDivArrowElement.firstElementChild.disabled;
-  firstSwapStockDivArrowElement.firstElementChild.disabled = secondSwapStockDivArrowElement.firstElementChild.disabled;
-  secondSwapStockDivArrowElement.firstElementChild.disabled = tempDisabled;
-
-  tempDisabled = firstSwapStockDivArrowElement.lastElementChild.disabled;
-  firstSwapStockDivArrowElement.lastElementChild.disabled = secondSwapStockDivArrowElement.lastElementChild.disabled;
-  secondSwapStockDivArrowElement.lastElementChild.disabled = tempDisabled;
+  loadStocksToView(state);
+  //TODO save state
 }
 
+function toggleHandler(toToggle) {
+  window.Stokr.model.state[toToggle] = !window.Stokr.model.state[toToggle];
 
+  let state = window.Stokr.model.state;
 
+  loadStocksToView(state);
+  //TODO save state
+}
+
+function applyHandler(filterParams) {
+  let state = window.Stokr.model.state;
+
+  let stocks = state.stocks.filter(filterFunc.bind(filterParams));
+
+  state.filterData = filterParams;
+
+  window.Stokr.view.renderMainPage(stocks, state);
+  //TODO save state
+}
+
+function filterFunc(stock) {
+  let filterParams = this;
+
+  let stockPercentChange = Number(stock.PercentChange.substr(0,stock.PercentChange.length-1));
+
+  return (stock.Symbol.toLowerCase().includes(filterParams.name.toLowerCase()) ||
+          stock.Name.toLowerCase().includes(filterParams.name.toLowerCase())) &&
+         ((filterParams.gain === 'all') ||
+          (filterParams.gain === 'losing' && stockPercentChange < 0) ||
+          (filterParams.gain === 'gaining' && stockPercentChange > 0)) &&
+         (filterParams.from === '' || filterParams.from <= stockPercentChange) &&
+         (filterParams.to === '' || stockPercentChange <= filterParams.to);
+}
+
+function removeSymbol(symbol) {
+  let state = window.Stokr.model.state;
+
+  let index = state.stocksToShow.findIndex(function (stockSymbol) {
+    return symbol === stockSymbol;
+  });
+
+  if (index !== -1) {
+    state.stocksToShow.splice(index, 1);
+
+    loadStocksToView(state, stocks);
+    window.Stokr.DB.updateStocksToShow(state.stocksToShow);
+  }
+}
