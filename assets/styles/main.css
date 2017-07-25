@@ -138,6 +138,15 @@ label.capitalize {
   width: 45%;
 }
 
+.div-gain {
+  position: relative;
+}
+
+.div-gain:before {
+  position: absolute;
+  right: 10px;
+}
+
 .filter label {
   font-size: 26px;
 }
@@ -149,6 +158,11 @@ label.capitalize {
   height: 55px;
   border-radius: 10px;
   padding-left: 10px;
+  border-width: 2px;
+  border-style: inset;
+  border-color: initial;
+  border-image: initial;
+  background: inherit;
 }
 
 .div-filter-range input {
@@ -274,7 +288,7 @@ label.capitalize {
   font-size: 30px;
 }
 
-.down-button {
+.down-button:before {
   transform: rotate(180deg);
 }
 

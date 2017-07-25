@@ -58,7 +58,7 @@ let state = {
     "CapitalMarket"
   ],
   filterData: {
-    name: '',
+    name: 'wix',
     gain: 'all',
     from: '',
     to: ''

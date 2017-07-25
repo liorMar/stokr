@@ -10,14 +10,14 @@ window.Stokr.controller = {
   window.Stokr.DB.getState(function (state) {
     window.Stokr.model.state = state;
     window.Stokr.DB.getStocks(function (stocks) {
-      state.stocks = stocks;
-      loadStocksToView(state);
+      window.Stokr.model.stocks = stocks;
+      loadStocksToView(stocks, state);
       window.Stokr.view.setListener('body', 'click', stockHandle);
     }, state.stocksToShow);
   });
 }());
 
-function loadStocksToView(state, stocks) {
+function loadStocksToView(stocks, state) {
   if (state.filterState){
     applyHandler(state.filterData);
   } else {
@@ -48,6 +48,9 @@ function stockHandle(action, args) {
     case 'remove':
       removeSymbol(args[0]);
       break;
+    case 'refresh':
+      refreshStocks();
+      break;
   }
 }
 
@@ -61,7 +64,7 @@ function upDownHandler(symbol, action) {
   if (oldIndex !== -1) {
     swapSymbols(state, oldIndex, oldIndex+action);
     window.Stokr.DB.updateStocksToShow(state.stocksToShow);
-    loadStocksToView(state);
+    loadStocksToView(window.Stokr.model.stocks, state);
   }
 }
 
@@ -74,25 +77,25 @@ function changeButtonHandler(){
   let state = window.Stokr.model.state;
   state.preferredChange = (state.preferredChange+1) % state.changePreferences.length;
 
-  loadStocksToView(state);
+  loadStocksToView(window.Stokr.model.stocks, state);
   //TODO save state
 }
 
 function toggleHandler(toToggle) {
-  window.Stokr.model.state[toToggle] = !window.Stokr.model.state[toToggle];
-
   let state = window.Stokr.model.state;
 
-  loadStocksToView(state);
+  window.Stokr.model.state[toToggle] = !window.Stokr.model.state[toToggle];
+
+  loadStocksToView(window.Stokr.model.stocks, state);
   //TODO save state
 }
 
 function applyHandler(filterParams) {
   let state = window.Stokr.model.state;
 
-  let stocks = state.stocks.filter(filterFunc.bind(filterParams));
-
   state.filterData = filterParams;
+
+  let stocks = window.Stokr.model.stocks.filter(filterFunc.bind(filterParams));
 
   window.Stokr.view.renderMainPage(stocks, state);
   //TODO save state
@@ -114,6 +117,7 @@ function filterFunc(stock) {
 
 function removeSymbol(symbol) {
   let state = window.Stokr.model.state;
+  let stocks = window.Stokr.model.stocks;
 
   let index = state.stocksToShow.findIndex(function (stockSymbol) {
     return symbol === stockSymbol;
@@ -121,8 +125,13 @@ function removeSymbol(symbol) {
 
   if (index !== -1) {
     state.stocksToShow.splice(index, 1);
+    stocks.splice(index, 1);
 
-    loadStocksToView(state, stocks);
+    loadStocksToView(stocks, state);
     window.Stokr.DB.updateStocksToShow(state.stocksToShow);
   }
+}
+
+function refreshStocks() {
+
 }

@@ -85,8 +85,10 @@ function _redOrGreen(num) {
 }
 
 function _loadFilter(state) {
-  if (state.filterState) {
-    return `
+  if (!state.filterState) {
+    return ''
+  }
+  return `
     <div class="filter">
       <div class="div-filter-name-gain">
           <div>
@@ -115,9 +117,6 @@ function _loadFilter(state) {
       <button class="apply-button">Apply</button>
   </div>
   `;
-  }
-
-  return '';
 }
 
 function _setListener(selector, eventType, handler) {
@@ -137,6 +136,8 @@ function _setListener(selector, eventType, handler) {
         handler('apply', _extractFilterParams());
       } else if (ev.target.classList.contains('remove-button')) {
         handler('remove', [_getClosestParent(ev.target, 'li').id]);
+      } else if (ev.target.classList.contains('refresh-button')) {
+        handler('refresh');
       }
     });
 }
