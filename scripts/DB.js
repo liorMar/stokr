@@ -16,10 +16,14 @@ window.Stokr = window.Stokr || {};
       .then((res) => {
         if(res.ok && res.status === 200 && res.headers.get('Content-Type').includes('application/json')) {
           return res.json().then(object => {
-            return object.query.results.quote.reduce((stocks, stock) => {
-              stocks.push(_extractStock(stock));
-              return stocks;
-            }, []);
+            if (object.query.count > 1) {
+              return object.query.results.quote.reduce((stocks, stock) => {
+                stocks.push(_extractStock(stock));
+                return stocks;
+              }, []);
+            } else {
+              return [_extractStock(object.query.results.quote)]
+            }
           });
         } else {
           return fetch('scripts/stocks.json').then((res) => res.json());
@@ -33,9 +37,14 @@ window.Stokr = window.Stokr || {};
       "Name": stock.Name,
       "Change": stock.Change,
       "PercentChange": (Math.round(stock.realtime_chg_percent * 100) / 100).toFixed(2),
-      "CapitalMarket" : stock.MarketCapitalization,
+      "CapitalMarket" : _capitalMarket(stock.MarketCapitalization),
       "LastTradePriceOnly": stock.LastTradePriceOnly
     };
+  }
+
+  function _capitalMarket(capitalMarket) {
+    capitalMarket = capitalMarket.substr(0, capitalMarket.length-1);
+    return (Math.round(capitalMarket * 100) / 100).toFixed(2)
   }
 
   function _getStockBySymbol(symbol) {

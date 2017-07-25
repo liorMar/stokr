@@ -12,7 +12,7 @@ window.Stokr = window.Stokr || {};
         <h1 class="logo">stokr</h1>
         <ul>
           <li>
-            <a href="#" class="search-button icon-search"></a>
+            <a href="#search" class="search-button icon-search"></a>
           </li>
           <li>
             <button class="refresh-button icon-refresh"></button>
@@ -74,7 +74,7 @@ window.Stokr = window.Stokr || {};
       return stock[changeType] + '%';
     }
 
-    return stock[changeType];
+    return stock[changeType] + 'B';
   }
 
   function _round(number) {
@@ -90,15 +90,15 @@ window.Stokr = window.Stokr || {};
       return ''
     }
     return `
-    <div class="filter">
+    <form class="filter">
       <div class="div-filter-name-gain">
           <div>
             <label for="name" class="capitalize">by name</label>
-            <input type="text" id="name" value="${state.filterData.name}">
+            <input type="text" id="name" name="name" value="${state.filterData.name}">
           </div>
           <div>
             <label for="gain" class="capitalize">by gain</label>
-            <select id="gain">
+            <select id="gain" name="gain">
               <option value="all" class="capitalize" ${state.filterData.gain === 'all' ? 'selected' : ''}>all</option>
               <option value="losing" class="capitalize" ${state.filterData.gain === 'losing' ? 'selected' : ''}>losing</option>
               <option value="gaining" class="capitalize" ${state.filterData.gain === 'gaining' ? 'selected' : ''}>gaining</option>
@@ -108,15 +108,15 @@ window.Stokr = window.Stokr || {};
       <div class="div-filter-range">
           <div>
             <label for="range-from" class="capitalize">by range: from</label>
-            <input type="number" id="range-from" value="${state.filterData.from}">
+            <input type="number" id="range-from" name="range-from" value="${state.filterData.from}">
           </div>
           <div>
             <label for="range-to" class="capitalize">by range: to</label>
-            <input type="number" id="range-to" value="${state.filterData.to}">
+            <input type="number" id="range-to" name="range-to" value="${state.filterData.to}">
           </div>
       </div>
       <button class="apply-button">Apply</button>
-  </div>
+  </form>
   `;
   }
 
@@ -139,6 +139,10 @@ window.Stokr = window.Stokr || {};
           handler('remove', [_getClosestParent(ev.target, 'li').id]);
         } else if (ev.target.classList.contains('refresh-button')) {
           handler('refresh');
+        } else if (ev.target.classList.contains('search-button')) {
+          handler('search-button');
+        } else if (ev.target.classList.contains('cancel-button')) {
+          handler('cancel');
         }
       });
   }
@@ -161,9 +165,26 @@ window.Stokr = window.Stokr || {};
     return _getClosestParent(element.parentElement, localName);
   }
 
+  function _renderSearch() {
+    document.querySelector('main').innerHTML = `
+      <div class="panelSearch">
+        <input type="text" name="search" id="search">
+        <a href="#" class="cancel-button capitalize">cancel</a>
+      </div>
+      <div class="search-results">
+        
+      </div>
+    `;
+  }
+
+  function _getUrlHash() {
+    return window.location.hash.slice(1);
+  }
+
   window.Stokr.view = {
     renderMainPage: _renderMainPage,
-    setListener: _setListener
-
+    setListener: _setListener,
+    renderSearch: _renderSearch,
+    getUrlHash: _getUrlHash
   };
 })()

@@ -12,17 +12,16 @@ html {
 }
 
 body {
-  width: 95%;
-  height: 97%;
-  margin: 3% auto;
+  height: 100%;
+  padding: 3%;
   background-color: #f0f4f7;
 }
 
 main {
   background-color: inherit;
   border-radius: 10px;
-  /*padding: 20px;*/
   overflow-y: scroll;
+  height: 100%;
 }
 
 button {
@@ -44,6 +43,7 @@ ul {
   color: #41bf15;
 }
 
+a.capitalize,
 label.capitalize {
   text-transform: capitalize;
 }
@@ -205,7 +205,15 @@ label.capitalize {
   position: absolute;
   left: 8px;
   top: 19px;
-  /*display: inline-block;*/
+}
+
+.stocks {
+  height: calc(100% - 119px);
+  overflow: auto;
+}
+
+form + .stocks {
+  height: calc(100% - 282px);
 }
 
 .stocks li {
@@ -298,4 +306,42 @@ label.capitalize {
 
 .red-button {
   background: #ff4f46;
+}
+
+/*-------search------*/
+
+.panelSearch {
+  position: relative;
+  height: 128px;
+  background-color: white;
+  border-radius: 8px 8px 0 0;
+  padding: 0 30px;
+  margin-bottom: 2px;
+}
+
+.panelSearch input {
+  width: 100%;
+  display: inline-block;
+  font-size: 26px;
+  height: 50%;
+  border: 1px solid #408be3;
+  border-radius: 20px;
+  margin-top: 32px;
+  padding: 0 30px;
+}
+
+.cancel-button {
+  position: absolute;
+  display: inline-block;
+  font-family: HelveticaNeueW01-55Roman, sans-serif;
+  color: #41bf15;
+  font-size: 26px;
+  text-decoration: none;
+  right: 55px;
+  top: 50px;
+}
+
+.search-results {
+  background: white;
+  height: calc(100% - 130px);
 }

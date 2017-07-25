@@ -2,13 +2,15 @@
   "stocksToShow": [
     "WIX",
     "GOOG",
-    "YHOO",
     "AAPL",
-    "GPO",
-    "MSFT"
+    "MSFT",
+    "YHOO",
+    "NKE",
+    "SBUX",
+    "T25.TA"
   ],
   "preferredChange": 2,
-  "filterState": true,
+  "filterState": false,
   "editState": false,
   "searchState": false,
   "changePreferences": [
@@ -17,7 +19,7 @@
     "CapitalMarket"
   ],
   "filterData": {
-    "name": "wix",
+    "name": "",
     "gain": "all",
     "from": "",
     "to": ""

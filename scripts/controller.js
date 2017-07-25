@@ -7,15 +7,28 @@ window.Stokr.controller = {
 };
 
 (function init(){
+  let interval;
+
+  let hash = window.Stokr.view.getUrlHash();
+  window.Stokr.view.setListener('body', 'click', stockHandle);
+
+  if (window.Stokr.view.getUrlHash() === 'search'){
+    window.Stokr.view.renderSearch();
+  }
+
   window.Stokr.DB.getState()
     .then(state => {
         window.Stokr.model.state = state;
         return window.Stokr.DB.getStocks(state.stocksToShow);
     }).then(stocks => {
       window.Stokr.model.stocks = stocks;
-      loadStocksToView(stocks, window.Stokr.model.state);
-      window.Stokr.view.setListener('body', 'click', stockHandle);
-    });
+      if (window.Stokr.view.getUrlHash() !== 'search') {
+        loadStocksToView(stocks, window.Stokr.model.state);
+        interval = setInterval(refreshStocks, 10000);
+      }
+
+      // window.Stokr.view.setListener('body', 'click', stockHandle);
+  });
 
   function loadStocksToView(stocks, state) {
     if (state.filterState){
@@ -50,6 +63,17 @@ window.Stokr.controller = {
         break;
       case 'refresh':
         refreshStocks();
+        break;
+      case 'search-button':
+        clearInterval(interval);
+        window.Stokr.view.renderSearch();
+        break;
+      case 'search':
+
+        break;
+      case 'cancel':
+        interval = setInterval(refreshStocks, 10000);
+        loadStocksToView(window.Stokr.model.stocks, window.Stokr.model.state);
         break;
     }
   }
@@ -128,11 +152,14 @@ window.Stokr.controller = {
       stocks.splice(index, 1);
 
       loadStocksToView(stocks, state);
-      window.Stokr.DB.updateStocksToShow(state.stocksToShow);
     }
   }
 
   function refreshStocks() {
-
+    return window.Stokr.DB.getStocks(window.Stokr.model.state.stocksToShow)
+      .then(stocks => {
+        window.Stokr.model.stocks = stocks;
+        loadStocksToView(stocks, window.Stokr.model.state);
+      });;
   }
 }());
