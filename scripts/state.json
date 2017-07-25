@@ -1,0 +1,25 @@
+{
+  "stocksToShow": [
+    "WIX",
+    "GOOG",
+    "YHOO",
+    "AAPL",
+    "GPO",
+    "MSFT"
+  ],
+  "preferredChange": 2,
+  "filterState": true,
+  "editState": false,
+  "searchState": false,
+  "changePreferences": [
+    "PercentChange",
+    "Change",
+    "CapitalMarket"
+  ],
+  "filterData": {
+    "name": "wix",
+    "gain": "all",
+    "from": "",
+    "to": ""
+  }
+}

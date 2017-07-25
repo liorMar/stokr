@@ -2,117 +2,70 @@
 
 window.Stokr = window.Stokr || {};
 
-window.Stokr.DB = {
-  getStocks: _getStocks,
-  getStockBySymbol: _getStockBySymbol,
-  getState: _getState,
-  updateStocksToShow: _updateStocksToShow,
-  updateFilterData: _updateFilterData
-};
+(function init(adpater) {
+  function _getStocks(stockSymbols) {
+    let symbols = stockSymbols.reduce((symbols, symbol, index) => {
+        if (index === 0) {
+          return symbol;
+        } else {
+          return symbols + ',' + symbol;
+        }
+      }, null);
 
-function _getStocks(callback, stockSymbols) {
-  if (stockSymbols) {
-    callback(stockSymbols.reduce(function (stocks, symbol) {
-      stocks.push(_getStockBySymbol(symbol));
-      return stocks;
-    }, []));
-  } else {
-    callback(stocks.slice());
+    return fetch(`http://localhost:7000/quotes?q=${symbols}`)
+      .then((res) => {
+        if(res.ok && res.status === 200 && res.headers.get('Content-Type').includes('application/json')) {
+          return res.json().then(object => {
+            return object.query.results.quote.reduce((stocks, stock) => {
+              stocks.push(_extractStock(stock));
+              return stocks;
+            }, []);
+          });
+        } else {
+          return fetch('scripts/stocks.json').then((res) => res.json());
+        }
+      });
   }
-}
 
-function _getStockBySymbol(symbol) {
-  return JSON.parse(JSON.stringify(stocks.find((stock) => {
-    return stock.Symbol === symbol;
-  })));
-}
-
-function _getState(callback) {
-  callback(state);
-}
-
-function _updateStocksToShow(newStocksToShow) {
-  state.stocksToShow = newStocksToShow;
-}
-
-function _updateFilterData(newfilterData) {
-  state.filterData = newfilterData;
-}
-
-let state = {
-  stocksToShow: [
-    "WIX",
-    "GOOG",
-    "YHOO",
-    "AAPL",
-    "GPO",
-    "MSFT"
-  ],
-  preferredChange: 2,
-  filterState: true,
-  editState: false,
-  searchState: false,
-  changePreferences: [
-    "PercentChange",
-    "Change",
-    "CapitalMarket"
-  ],
-  filterData: {
-    name: 'wix',
-    gain: 'all',
-    from: '',
-    to: ''
+  function _extractStock(stock) {
+    return {
+      "Symbol": stock.Symbol,
+      "Name": stock.Name,
+      "Change": stock.Change,
+      "PercentChange": (Math.round(stock.realtime_chg_percent * 100) / 100).toFixed(2),
+      "CapitalMarket" : stock.MarketCapitalization,
+      "LastTradePriceOnly": stock.LastTradePriceOnly
+    };
   }
-};
 
-let stocks =
-  [
-    {
-      "Symbol": "WIX",
-      "Name": "Wix.com Ltd.",
-      "Change": "0.750000",
-      "PercentChange": "+1.51%",
-      "CapitalMarket" : "3.4B",
-      "LastTradePriceOnly": "76.099998"
-    },
-    {
-      "Symbol": "MSFT",
-      "Name": "Microsoft Corporation",
-      "PercentChange": "-2.09%",
-      "Change": "-0.850006",
-      "CapitalMarket" : "7.2B",
-      "LastTradePriceOnly": "69.620003"
-    },
-    {
-      "Symbol": "YHOO",
-      "Name": "Yahoo! Inc.",
-      "Change": "0.279999",
-      "PercentChange": "+1.11%",
-      "CapitalMarket" : "4.7B",
-      "LastTradePriceOnly": "50.599998"
-    },
-    {
-      "Symbol": "AAPL",
-      "Name": "Apple.com Company",
-      "Change": "-0.349999",
-      "PercentChange": "-2.62%",
-      "CapitalMarket" : "749.7B",
-      "LastTradePriceOnly": "143.729998"
-    },
-    {
-      "Symbol": "GOOG",
-      "Name": "Google.com Inc",
-      "Change": "-0.349999",
-      "PercentChange": "-2.62%",
-      "CapitalMarket" : "345.3B",
-      "LastTradePriceOnly": "927.327"
-    },
-    {
-      "Symbol": "GPO",
-      "Name": "GoPro.com LTD",
-      "Change": "0.49999",
-      "PercentChange": "+30.38%",
-      "CapitalMarket" : "1.2B",
-      "LastTradePriceOnly": "11.09"
-    }
-  ];
+  function _getStockBySymbol(symbol) {
+    return JSON.parse(JSON.stringify(stocks.find((stock) => {
+      return stock.Symbol === symbol;
+    })));
+  }
+
+  function _getState() {
+    return fetch('scripts/state.json')
+      .then((res) => {
+        return res.json();
+    });
+  }
+
+  function _updateStocksToShow(newStocksToShow) {
+    state.stocksToShow = newStocksToShow;
+  }
+
+  function _updateFilterData(newfilterData) {
+    state.filterData = newfilterData;
+  }
+
+  window.Stokr.DB = {
+    getStocks: _getStocks,
+    getStockBySymbol: _getStockBySymbol,
+    getState: _getState,
+    updateStocksToShow: _updateStocksToShow,
+    updateFilterData: _updateFilterData
+  };
+})();
+
+//
