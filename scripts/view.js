@@ -12,16 +12,16 @@ window.Stokr = window.Stokr || {};
         <h1 class="logo">stokr</h1>
         <ul>
           <li>
-            <a href="#search" class="search-button icon-search"></a>
+            <a href="#search" class="search-button icon-search" action="search"></a>
           </li>
           <li>
-            <button class="refresh-button icon-refresh"></button>
+            <button class="refresh-button icon-refresh" action="refresh"></button>
           </li>
           <li>
-            <button class="filter-button icon-filter ${_areOn(state.filterState)}"></button>
+            <button class="filter-button icon-filter ${_areOn(state.filterState)}" action="filter"></button>
           </li>
           <li>
-            <button class="edit-button icon-settings ${_areOn(state.editState)}"></button>
+            <button class="edit-button icon-settings ${_areOn(state.editState)}" action="edit"></button>
           </li>
         </ul>
       </div>
@@ -49,18 +49,18 @@ window.Stokr = window.Stokr || {};
     return `
     <li class="box" id="${stock.Symbol}">
       <div class="stock-name">
-        ${state.editState ? '<button class="remove-button"></button>' : ''}
+        ${state.editState ? '<button class="remove-button" action="remove"></button>' : ''}
         <h2>${stock.Symbol}</h2>
         <h3>(${stock.Name})</h3>
       </div>
       <div class="box-numbers">
         ${_round(stock.LastTradePriceOnly)}     
-        <button class="change-button ${_redOrGreen(Number(stock.Change))}">
+        <button class="change-button ${_redOrGreen(Number(stock.Change))}" action="change">
           ${_changeToShow(stock, state)} 
         </button>     
         <div class="box-arrow ${state.filterState ? 'box-arrow-hidden' : ''}" data-symbol="${stock.Symbol}">       
-          <button class="icon-arrow up-button arrow-button" ${upDisabled}></button>
-          <button class="icon-arrow down-button arrow-button" ${downDisabled}></button>
+          <button class="icon-arrow up-button arrow-button" ${upDisabled} action="up"></button>
+          <button class="icon-arrow down-button arrow-button" ${downDisabled} action="down"></button>
         </div>
       </div>
     </li>`;
@@ -115,7 +115,7 @@ window.Stokr = window.Stokr || {};
             <input type="number" id="range-to" name="range-to" value="${state.filterData.to}">
           </div>
       </div>
-      <button class="apply-button">Apply</button>
+      <button class="apply-button" action="apply">Apply</button>
   </form>
   `;
   }
@@ -126,43 +126,39 @@ window.Stokr = window.Stokr || {};
     listener = handler;
     document.querySelector(selector)
       .addEventListener(eventType, function (ev) {
-        // debugger;
-        if (ev.target.classList.contains('up-button')) {
-          handler('up', _getClosestParent(ev.target, 'li').id);
-        } else if (ev.target.classList.contains('down-button')) {
-          handler('down', _getClosestParent(ev.target, 'li').id);
-        } else if (ev.target.classList.contains('change-button')) {
-          handler('change');
-        } else if (ev.target.classList.contains('filter-button')) {
-          handler('filter');
-        } else if (ev.target.classList.contains('edit-button')) {
-          handler('edit');
-        } else if (ev.target.classList.contains('apply-button')) {
-          handler('apply', _extractFilterParams(ev));
-        } else if (ev.target.classList.contains('remove-button')) {
-          handler('remove', _getClosestParent(ev.target, 'li').id);
-        } else if (ev.target.classList.contains('refresh-button')) {
-          handler('refresh');
-        } else if (ev.target.classList.contains('search-button')) {
-          handler('search-button');
-        } else if (ev.target.classList.contains('cancel-button')) {
-          handler('cancel');
-        } else if (ev.target.classList.contains('add-button')) {
-          handler('add', _getClosestParent(ev.target, 'li').id);
+        let action;
+        if (action = ev.target.getAttribute('action')) {
+          switch (action) {
+            case 'apply':
+              listener('apply', _extractFilterParams(ev.target));
+              break;
+            case 'add':
+              window.location.hash = '';
+            case 'up':
+            case 'down':
+            case 'remove':
+              handler(action, _getClosestParent(ev.target, 'li').id);
+              break;
+            case 'change':
+            case 'filter':
+            case 'edit':
+            case 'refresh':
+            case 'search':
+            case 'cancel':
+              handler(action);
+          }
         }
       });
   }
 
-  // {
-  //   up: [_getClosestParent(ev.target, 'li').id]
-  // }
+  function _extractFilterParams(target) {
+    target = _getClosestParent(target, 'form');
 
-  function _extractFilterParams() {
     return {
-      name: document.getElementById('name').value,
-      gain: document.getElementById('gain').value,
-      from: document.getElementById('range-from').value,
-      to: document.getElementById('range-to').value
+      name: target[0].value,
+      gain: target[1].value,
+      from: target[2].value,
+      to: target[3].value
     };
   }
 
@@ -179,19 +175,15 @@ window.Stokr = window.Stokr || {};
     document.querySelector('main').innerHTML = `
       <div class="panelSearch">
         <input type="text" name="search" id="search" value="${results ? results[0] : ''}">
-        <a href="#" class="cancel-button capitalize">cancel</a>
+        <a href="#" class="cancel-button capitalize" action="cancel">cancel</a>
       </div>
       ${_loadSearchResults(results)}`;
 
     document.querySelector('.panelSearch input').addEventListener('keypress', ev => {
       if(ev.keyCode === 13) {
-        window.location.hash = '';
-        listener('search', ev.target.value)
+        listener('searchValue', ev.target.value)
       }
     })
-
-    // _setListener()
-
   }
 
   function _loadSearchResults(results) {
@@ -227,7 +219,7 @@ window.Stokr = window.Stokr || {};
                 <h2>${stock.symbol}</h2>
                 <h3>${stock.name}</h3>
               </div>
-              <button class="add-button">+</button>
+              <button class="add-button" action="add">+</button>
             </li>`;
     }, '')
   }

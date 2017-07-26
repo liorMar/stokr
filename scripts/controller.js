@@ -39,47 +39,39 @@ window.Stokr.controller = {
   }
 
   function stockHandle(action, args) {
-    switch (action) {
-      case 'change':
-        changeButtonHandler();
-        break;
-      case 'up':
-        upDownHandler(args, -1);
-        break;
-      case 'down':
-        upDownHandler(args, 1);
-        break;
-      case 'filter':
-        toggleHandler('filterState');
-        break;
-      case 'apply':
-        applyHandler(window.Stokr.model.stocks, args);
-        break;
-      case 'edit':
-        toggleHandler('editState');
-        break;
-      case 'remove':
-        removeSymbol(args);
-        break;
-      case 'refresh':
-        refreshStocks();
-        break;
-      case 'search-button':
-        clearInterval(interval);
-        window.Stokr.view.renderSearch();
-        break;
-      case 'search':
-        searchHandler(args);
-        break;
-      case 'cancel':
-        // interval = setInterval(refreshStocks, 10000);
-        loadStocksToView(window.Stokr.model.stocks, window.Stokr.model.state);
-        break;
-      case 'add':
-        addHandler(args);
-        break;
-    }
+    handlers[action](args);
   }
+
+  let handlers = {
+    "change": changeButtonHandler,
+    "refresh": refreshStocks,
+    "add": addHandler,
+    "searchValue": searchHandler,
+    "remove": removeSymbol,
+    "up": function (args) {
+      upDownHandler(args, -1);
+    },
+    "down": function (args) {
+      upDownHandler(args, 1);
+    },
+    "filter": function () {
+      toggleHandler('filterState');
+    },
+    "edit": function () {
+      toggleHandler('editState');
+    },
+    "apply": function (args) {
+      applyHandler(window.Stokr.model.stocks, args);
+    },
+    "search": function () {
+      clearInterval(interval);
+      window.Stokr.view.renderSearch();
+    },
+    "cancel": function () {
+      // interval = setInterval(refreshStocks, 10000);
+      loadStocksToView(window.Stokr.model.stocks, window.Stokr.model.state);
+    }
+  };
 
   function upDownHandler(symbol, action) {
     let state = window.Stokr.model.state;
