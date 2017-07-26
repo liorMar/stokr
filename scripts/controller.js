@@ -98,6 +98,9 @@ window.Stokr.controller = {
   function swapSymbols(state, oldIndex, newIndex) {
     let firstSymbol = state.stocksToShow.splice(oldIndex, 1)[0];
     state.stocksToShow.splice(newIndex, 0, firstSymbol);
+
+    firstSymbol = window.Stokr.model.stocks.splice(oldIndex, 1)[0];
+    window.Stokr.model.stocks.splice(newIndex, 0, firstSymbol);
   }
 
   function changeButtonHandler(){
@@ -137,7 +140,7 @@ window.Stokr.controller = {
       stock.Name.toLowerCase().includes(filterParams.name.toLowerCase())) &&
       ((filterParams.gain === 'all') ||
       (filterParams.gain === 'losing' && stockPercentChange < 0) ||
-      (filterParams.gain === 'gaining' && stockPercentChange > 0)) &&
+      (filterParams.gain === 'gaining' && stockPercentChange >= 0)) &&
       (filterParams.from === '' || filterParams.from <= stockPercentChange) &&
       (filterParams.to === '' || stockPercentChange <= filterParams.to);
   }
