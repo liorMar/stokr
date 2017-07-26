@@ -9,7 +9,6 @@ window.Stokr.controller = {
 (function init(){
   let interval;
 
-  let hash = window.Stokr.view.getUrlHash();
   window.Stokr.view.setListener('body', 'click', stockHandle);
 
   if (window.Stokr.view.getUrlHash() === 'search'){
@@ -19,20 +18,21 @@ window.Stokr.controller = {
   window.Stokr.DB.getState()
     .then(state => {
         window.Stokr.model.state = state;
-        return window.Stokr.DB.getStocks(state.stocksToShow);
+      if (window.Stokr.view.getUrlHash() !== 'search'){
+        loadStocksToView([], state);
+      }
+      return window.Stokr.DB.getStocks(state.stocksToShow);
     }).then(stocks => {
       window.Stokr.model.stocks = stocks;
       if (window.Stokr.view.getUrlHash() !== 'search') {
         loadStocksToView(stocks, window.Stokr.model.state);
-        interval = setInterval(refreshStocks, 10000);
+        // interval = setInterval(refreshStocks, 10000);
       }
-
-      // window.Stokr.view.setListener('body', 'click', stockHandle);
   });
 
   function loadStocksToView(stocks, state) {
     if (state.filterState){
-      applyHandler(state.filterData);
+      applyHandler(stocks, state.filterData);
     } else {
       window.Stokr.view.renderMainPage(stocks, state);
     }
@@ -44,22 +44,22 @@ window.Stokr.controller = {
         changeButtonHandler();
         break;
       case 'up':
-        upDownHandler(args[0], -1);
+        upDownHandler(args, -1);
         break;
       case 'down':
-        upDownHandler(args[0], 1);
+        upDownHandler(args, 1);
         break;
       case 'filter':
         toggleHandler('filterState');
         break;
       case 'apply':
-        applyHandler(args);
+        applyHandler(window.Stokr.model.stocks, args);
         break;
       case 'edit':
         toggleHandler('editState');
         break;
       case 'remove':
-        removeSymbol(args[0]);
+        removeSymbol(args);
         break;
       case 'refresh':
         refreshStocks();
@@ -69,11 +69,14 @@ window.Stokr.controller = {
         window.Stokr.view.renderSearch();
         break;
       case 'search':
-
+        searchHandler(args);
         break;
       case 'cancel':
-        interval = setInterval(refreshStocks, 10000);
+        // interval = setInterval(refreshStocks, 10000);
         loadStocksToView(window.Stokr.model.stocks, window.Stokr.model.state);
+        break;
+      case 'add':
+        addHandler(args);
         break;
     }
   }
@@ -87,8 +90,8 @@ window.Stokr.controller = {
 
     if (oldIndex !== -1) {
       swapSymbols(state, oldIndex, oldIndex+action);
-      window.Stokr.DB.updateStocksToShow(state.stocksToShow);
       loadStocksToView(window.Stokr.model.stocks, state);
+      window.Stokr.DB.updateState(state);
     }
   }
 
@@ -102,7 +105,7 @@ window.Stokr.controller = {
     state.preferredChange = (state.preferredChange+1) % state.changePreferences.length;
 
     loadStocksToView(window.Stokr.model.stocks, state);
-    //TODO save state
+    window.Stokr.DB.updateState(state);
   }
 
   function toggleHandler(toToggle) {
@@ -111,18 +114,18 @@ window.Stokr.controller = {
     window.Stokr.model.state[toToggle] = !window.Stokr.model.state[toToggle];
 
     loadStocksToView(window.Stokr.model.stocks, state);
-    //TODO save state
+    window.Stokr.DB.updateState(state);
   }
 
-  function applyHandler(filterParams) {
+  function applyHandler(stocks, filterParams) {
     let state = window.Stokr.model.state;
 
     state.filterData = filterParams;
 
-    let stocks = window.Stokr.model.stocks.filter(filterFunc.bind(filterParams));
+    stocks = stocks.filter(filterFunc.bind(filterParams));
 
     window.Stokr.view.renderMainPage(stocks, state);
-    //TODO save state
+    window.Stokr.DB.updateState(state);
   }
 
   function filterFunc(stock) {
@@ -160,6 +163,35 @@ window.Stokr.controller = {
       .then(stocks => {
         window.Stokr.model.stocks = stocks;
         loadStocksToView(stocks, window.Stokr.model.state);
-      });;
+      });
+  }
+
+  function searchHandler(searchValue) {
+    let symbols = window.Stokr.model.state.stocksToShow;
+    window.Stokr.DB.search(searchValue)
+      .then((results, index) => {
+        if (index === 0) return true;
+
+        results = results.filter(stock => {
+          return symbols.indexOf(stock.symbol) === -1;
+        });
+
+        window.Stokr.view.renderSearch(results);
+      });
+  }
+
+  function addHandler(symbol) {
+    let state = window.Stokr.model.state;
+
+    state.stocksToShow.push(symbol);
+    window.Stokr.DB.updateState(state);
+
+    window.Stokr.DB.getStocks(state.stocksToShow)
+      .then(stocks => {
+        window.Stokr.model.stocks = stocks;
+        loadStocksToView(stocks, window.Stokr.model.state);
+      });
+
+    loadStocksToView(window.Stokr.model.stocks, window.Stokr.model.state);
   }
 }());

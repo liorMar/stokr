@@ -44,7 +44,8 @@ ul {
 }
 
 a.capitalize,
-label.capitalize {
+label.capitalize,
+div.capitalize {
   text-transform: capitalize;
 }
 
@@ -65,11 +66,15 @@ label.capitalize {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 117px;
+  height: 118px;
   background-color: white;
   border-radius: 8px 8px 0 0;
   padding: 0 30px;
-  margin-bottom: 2px;
+  position: fixed;
+  right: 3%;
+  left: 3%;
+  z-index: 1;
+  border-bottom: 2px solid #f0f4f7;
 }
 
 .box {
@@ -109,12 +114,17 @@ label.capitalize {
   height: 161px;
   background-color: white;
   margin-bottom: 2px;
-  width: 100%;
+  /*width: 100%;*/
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 29px;
   align-content: stretch;
+  margin-top: 118px;
+  position: fixed;
+  right: 3%;
+  left: 3%;
+  z-index: 1;
 }
 
 .div-filter-range,
@@ -208,12 +218,16 @@ label.capitalize {
 }
 
 .stocks {
-  height: calc(100% - 119px);
+  margin-top: 119px;
   overflow: auto;
 }
 
+form  {
+  border-bottom: 2px solid #f0f4f7;
+}
+
 form + .stocks {
-  height: calc(100% - 282px);
+  margin-top: 279px;
 }
 
 .stocks li {
@@ -311,12 +325,15 @@ form + .stocks {
 /*-------search------*/
 
 .panelSearch {
-  position: relative;
+  position: fixed;
   height: 128px;
   background-color: white;
   border-radius: 8px 8px 0 0;
   padding: 0 30px;
-  margin-bottom: 2px;
+  right: 3%;
+  left: 3%;
+  z-index: 1;
+  border-bottom: 2px solid #f0f4f7;
 }
 
 .panelSearch input {
@@ -327,7 +344,7 @@ form + .stocks {
   border: 1px solid #408be3;
   border-radius: 20px;
   margin-top: 32px;
-  padding: 0 30px;
+  padding: 0 132px 0 30px;
 }
 
 .cancel-button {
@@ -341,7 +358,76 @@ form + .stocks {
   top: 50px;
 }
 
-.search-results {
+.panelSearch + * {
   background: white;
-  height: calc(100% - 130px);
+  margin-top: 130px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /*height: calc(100% - 130px);*/
 }
+
+.panelSearch + div {
+  justify-content: center;
+  position: absolute;
+  bottom: 30px;
+  top: 38px;
+  right: 3%;
+  left: 3%;
+  display: flex;
+  align-items: center;
+}
+
+.search-div > div {
+  font-size: 210px;
+  color: #ababab;
+}
+
+.search-div > div + div {
+  font-size: 33px;
+  color: #868686;
+  font-family: HelveticaNeueW01-55Roman, sans-serif;
+}
+
+.panelSearch + div:before {
+  font-size: 12vw;
+}
+
+.search-results {
+  height: 100%;
+}
+
+/*------------search results----------*/
+
+.panelSearch + .results {
+  justify-content: flex-start;
+}
+
+.results > li {
+  height: 117px;
+  background-color: white;
+  font-family: Avenir, sans-serif;
+}
+
+.results {
+  overflow: auto;
+}
+
+.add-button {
+  font-family: HelveticaNeueW01-55Roman, sans-serif;
+  background: #41bf15;
+  font-size: 30px;
+  color: white;
+  width: 70px;
+  height: 56px;
+  border-radius: 10px;
+}
+
+
+
+
+
+
+
+
+

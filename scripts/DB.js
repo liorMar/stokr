@@ -3,6 +3,10 @@
 window.Stokr = window.Stokr || {};
 
 (function init(adpater) {
+  let baseURL = 'http://localhost:7000/';
+  let getStockURL = 'quotes?q=';
+  let searchStockURL = 'search?q=';
+
   function _getStocks(stockSymbols) {
     let symbols = stockSymbols.reduce((symbols, symbol, index) => {
         if (index === 0) {
@@ -12,17 +16,16 @@ window.Stokr = window.Stokr || {};
         }
       }, null);
 
-    return fetch(`http://localhost:7000/quotes?q=${symbols}`)
+    return fetch(`${baseURL}${getStockURL}${symbols}`)
       .then((res) => {
         if(res.ok && res.status === 200 && res.headers.get('Content-Type').includes('application/json')) {
           return res.json().then(object => {
-            if (object.query.count > 1) {
-              return object.query.results.quote.reduce((stocks, stock) => {
-                stocks.push(_extractStock(stock));
-                return stocks;
-              }, []);
-            } else {
+            if (object.query.count === 1) {
               return [_extractStock(object.query.results.quote)]
+            } else if (object.query.count > 1) {
+              return object.query.results.quote.map((stock) => {
+                return _extractStock(stock);
+              });
             }
           });
         } else {
@@ -54,26 +57,76 @@ window.Stokr = window.Stokr || {};
   }
 
   function _getState() {
-    return fetch('scripts/state.json')
+    return Promise.resolve().then(() => {
+      let state = localStorage.getItem("state");
+
+      if (state) {
+        return JSON.parse(state);
+      } else {
+        _updateState(defoultState);
+
+        return defoultState;
+      }
+    })
+  }
+
+  function _updateState(newState) {
+      localStorage.setItem("state", JSON.stringify(newState));
+  }
+
+  function _search(searchValue) {
+    return fetch(`${baseURL}${searchStockURL}${searchValue}`)
       .then((res) => {
-        return res.json();
-    });
+        if(res.ok && res.status === 200 && res.headers.get('Content-Type').includes('application/json')) {
+          return res.json().then(object => {
+            return object.ResultSet.Result.reduce((results, res) => {
+              results.push({
+                symbol: res.symbol,
+                name: res.name,
+              });
+
+              return results;
+            }, [searchValue]);
+          });
+        } else {
+          return [searchValue];
+        }
+      });
   }
 
-  function _updateStocksToShow(newStocksToShow) {
-    state.stocksToShow = newStocksToShow;
-  }
-
-  function _updateFilterData(newfilterData) {
-    state.filterData = newfilterData;
-  }
+  const defoultState = {
+    stocksToShow: [
+      "WIX",
+      "GOOG",
+      "AAPL",
+      "MSFT",
+      "NKE",
+      "SBUX",
+      "T25.TA"
+    ],
+    preferredChange: 1,
+    filterState: false,
+    editState: false,
+    searchState: false,
+    changePreferences: [
+      "PercentChange",
+      "Change",
+      "CapitalMarket"
+    ],
+    filterData: {
+      "name": "",
+      "gain": "all",
+      "from": "",
+      "to": ""
+    }
+  };
 
   window.Stokr.DB = {
     getStocks: _getStocks,
     getStockBySymbol: _getStockBySymbol,
     getState: _getState,
-    updateStocksToShow: _updateStocksToShow,
-    updateFilterData: _updateFilterData
+    updateState: _updateState,
+    search: _search
   };
 })();
 

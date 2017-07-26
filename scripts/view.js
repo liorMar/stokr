@@ -120,13 +120,17 @@ window.Stokr = window.Stokr || {};
   `;
   }
 
+  let listener;
+
   function _setListener(selector, eventType, handler) {
+    listener = handler;
     document.querySelector(selector)
       .addEventListener(eventType, function (ev) {
+        // debugger;
         if (ev.target.classList.contains('up-button')) {
-          handler('up', [_getClosestParent(ev.target, 'li').id]);
+          handler('up', _getClosestParent(ev.target, 'li').id);
         } else if (ev.target.classList.contains('down-button')) {
-          handler('down', [_getClosestParent(ev.target, 'li').id]);
+          handler('down', _getClosestParent(ev.target, 'li').id);
         } else if (ev.target.classList.contains('change-button')) {
           handler('change');
         } else if (ev.target.classList.contains('filter-button')) {
@@ -134,18 +138,24 @@ window.Stokr = window.Stokr || {};
         } else if (ev.target.classList.contains('edit-button')) {
           handler('edit');
         } else if (ev.target.classList.contains('apply-button')) {
-          handler('apply', _extractFilterParams());
+          handler('apply', _extractFilterParams(ev));
         } else if (ev.target.classList.contains('remove-button')) {
-          handler('remove', [_getClosestParent(ev.target, 'li').id]);
+          handler('remove', _getClosestParent(ev.target, 'li').id);
         } else if (ev.target.classList.contains('refresh-button')) {
           handler('refresh');
         } else if (ev.target.classList.contains('search-button')) {
           handler('search-button');
         } else if (ev.target.classList.contains('cancel-button')) {
           handler('cancel');
+        } else if (ev.target.classList.contains('add-button')) {
+          handler('add', _getClosestParent(ev.target, 'li').id);
         }
       });
   }
+
+  // {
+  //   up: [_getClosestParent(ev.target, 'li').id]
+  // }
 
   function _extractFilterParams() {
     return {
@@ -165,16 +175,61 @@ window.Stokr = window.Stokr || {};
     return _getClosestParent(element.parentElement, localName);
   }
 
-  function _renderSearch() {
+  function _renderSearch(results) {
     document.querySelector('main').innerHTML = `
       <div class="panelSearch">
-        <input type="text" name="search" id="search">
+        <input type="text" name="search" id="search" value="${results ? results[0] : ''}">
         <a href="#" class="cancel-button capitalize">cancel</a>
       </div>
-      <div class="search-results">
-        
-      </div>
-    `;
+      ${_loadSearchResults(results)}`;
+
+    document.querySelector('.panelSearch input').addEventListener('keypress', ev => {
+      if(ev.keyCode === 13) {
+        window.location.hash = '';
+        listener('search', ev.target.value)
+      }
+    })
+
+    // _setListener()
+
+  }
+
+  function _loadSearchResults(results) {
+    if (results !== undefined) {
+      if (results.length === 1) {
+        return `
+          <div class="search-div">
+            <div class="icon-search-place-holder"></div>
+            <div class="capitalize">not found</div>
+          </div>
+        `;
+      } else {
+        return `
+        <ul class="results">
+          ${_buildAnswers(results)}
+        </ul>`;
+      }
+    } else {
+      return `
+          <div class="search-div">
+            <div class="icon-search-place-holder"></div>
+            <div class="capitalize">search</div>
+          </div>
+        `;
+    }
+  }
+
+  function _buildAnswers(reults) {
+    return reults.reduce((stocksLis, stock, index) => {
+      return index === 0 ? stocksLis : stocksLis + `
+            <li class="box" id="${stock.symbol}">
+              <div class="stock-name">
+                <h2>${stock.symbol}</h2>
+                <h3>${stock.name}</h3>
+              </div>
+              <button class="add-button">+</button>
+            </li>`;
+    }, '')
   }
 
   function _getUrlHash() {
