@@ -234,4 +234,4 @@ window.Stokr = window.Stokr || {};
     renderSearch: _renderSearch,
     getUrlHash: _getUrlHash
   };
-})()
+})();
