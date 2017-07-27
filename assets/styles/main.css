@@ -11,6 +11,10 @@ html {
   margin: 0;
 }
 
+*:focus {
+  outline: none;
+}
+
 body {
   height: 100%;
   padding: 3%;
@@ -106,7 +110,8 @@ div.capitalize {
   font-weight: lighter;
 }
 
-.panelMain li:hover * {
+.panelMain li *:focus,
+.panelMain li *:hover {
   color: red;
 }
 
@@ -188,6 +193,12 @@ div.capitalize {
   border-radius: 60px;
   color: white;
   font-size: 30px;
+}
+
+.apply-button:hover,
+.apply-button:focus {
+  background-color: #ff4f46;
+  border-color: #55110f;
 }
 
 

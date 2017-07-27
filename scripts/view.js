@@ -35,8 +35,8 @@ window.Stokr = window.Stokr || {};
   }
 
   function _loadStocks(stocks, state) {
-    let ulInnerHTML = stocks.reduce(function (html, stock, index) {
-      return html + _buildStockLi(stock, state, (index === 0 && 'disabled' ) || '', (index === (stocks.length - 1) && 'disabled' ) || '');
+    let ulInnerHTML = stocks.reduce(function (html, stock) {
+      return html + _buildStockLi(stock, state);
     }, '');
 
     return `
@@ -45,7 +45,7 @@ window.Stokr = window.Stokr || {};
     </ul>`;
   }
 
-  function _buildStockLi(stock, state, upDisabled, downDisabled) {
+  function _buildStockLi(stock, state) {
     return `
     <li class="box" id="${stock.Symbol}">
       <div class="stock-name">
@@ -59,8 +59,8 @@ window.Stokr = window.Stokr || {};
           ${_changeToShow(stock, state)} 
         </button>     
         <div class="box-arrow ${state.filterState ? 'box-arrow-hidden' : ''}" data-symbol="${stock.Symbol}">       
-          <button class="icon-arrow up-button arrow-button" ${upDisabled} action="up"></button>
-          <button class="icon-arrow down-button arrow-button" ${downDisabled} action="down"></button>
+          <button class="icon-arrow up-button arrow-button" action="up"></button>
+          <button class="icon-arrow down-button arrow-button" action="down"></button>
         </div>
       </div>
     </li>`;

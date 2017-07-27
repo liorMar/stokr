@@ -80,7 +80,7 @@ window.Stokr.controller = {
       return symbol === stockSymbol;
     });
 
-    if (oldIndex !== -1) {
+    if (oldIndex !== -1 && oldIndex+action >= 0 && oldIndex+action < state.stocksToShow.length) {
       swapSymbols(state, oldIndex, oldIndex+action);
       loadStocksToView(window.Stokr.model.stocks, state);
       window.Stokr.DB.updateState(state);
